@@ -1,4 +1,4 @@
-![Alt text](https://raw.githubusercontent.com/zevlee/footprint-otp/main/footprint-otp.svg?token=AOK4M5FJGPZVTSIANY2X3ITAVJ2XC)
+![Alt text](https://raw.githubusercontent.com/zevlee/footprint-otp/main/footprint-otp.svg)
 
 # Footprint OTP
 Footprint OTP is a simple encryption program that uses the [one-time pad](https://en.wikipedia.org/wiki/One-time_pad) technique. It uses the Python [secrets](https://docs.python.org/3/library/secrets.html) module for key generation.
