@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=Footprint OTP
+Comment=One-time pad encryption GUI application.
+Exec=footprint-otp
+Terminal=false
+Type=Application
+Icon=footprint-otp
+Categories=GNOME;GTK;Utility;
+StartupNotify=false
