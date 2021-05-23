@@ -161,87 +161,68 @@ class Preferences(Gtk.Window):
         self.mode.set_active(modes.index(self.config["mode"]))
         grid.attach(self.mode, 1, 0, 1, 1)
 
-        alg_label = Gtk.Label(halign=Gtk.Align.START)
-        alg_label.set_markup("<b>Default Compression</b>")
-        grid.attach(alg_label, 0, 1, 1, 1)
-
-        self.comp = Gtk.ComboBoxText()
-        self.comp.set_entry_text_column(0)
-        algorithms = [
-            "gzip",
-            "zlib",
-            "lzma",
-            "bzip2",
-            "smallest",
-            "uncompressed"
-        ]
-        for alg in algorithms:
-            self.comp.append_text(alg)
-        self.comp.set_active(algorithms.index(self.config["comp"]))
-        grid.attach(self.comp, 1, 1, 1, 1)
-
         def_label = Gtk.Label(halign=Gtk.Align.START)
         def_label.set_markup("<b>Default Directory</b>")
-        grid.attach(def_label, 0, 2, 1, 1)
+        grid.attach(def_label, 0, 1, 1, 1)
 
         def_button = Gtk.Button(label="Choose Directory")
         def_button.connect("clicked", self.on_dflt_clicked)
-        grid.attach(def_button, 1, 2, 1, 1)
+        grid.attach(def_button, 1, 1, 1, 1)
 
         self.dflt = Gtk.Entry()
         self.dflt.set_text(self.config["dflt"])
-        grid.attach(self.dflt, 0, 3, 2, 1)
+        grid.attach(self.dflt, 0, 2, 2, 1)
 
         key_label = Gtk.Label(halign=Gtk.Align.START)
         key_label.set_markup("<b>Keys Location</b>")
-        grid.attach(key_label, 0, 4, 1, 1)
+        grid.attach(key_label, 0, 3, 1, 1)
 
         key_button = Gtk.Button(label="Choose Directory")
         key_button.connect("clicked", self.on_key_clicked)
-        grid.attach(key_button, 1, 4, 1, 1)
+        grid.attach(key_button, 1, 3, 1, 1)
 
         self.key = Gtk.Entry()
         self.key.set_text(self.config["keys"])
-        grid.attach(self.key, 0, 5, 2, 1)
+        grid.attach(self.key, 0, 4, 2, 1)
 
         enc_label = Gtk.Label(halign=Gtk.Align.START)
         enc_label.set_markup("<b>Default Save Location</b>")
-        grid.attach(enc_label, 0, 6, 1, 1)
+        grid.attach(enc_label, 0, 5, 1, 1)
 
         enc_button = Gtk.Button(label="Choose Directory")
         enc_button.connect("clicked", self.on_enc_clicked)
-        grid.attach(enc_button, 1, 6, 1, 1)
+        grid.attach(enc_button, 1, 5, 1, 1)
 
         self.save = Gtk.Entry()
         self.save.set_text(self.config["save"])
-        grid.attach(self.save, 0, 7, 2, 1)
+        grid.attach(self.save, 0, 6, 2, 1)
 
         note = Gtk.Label(halign=Gtk.Align.START)
         note.set_markup(Fn.lnbr(
             "<small>If the save location is left blank, files are saved to the"
             + " same location as the selected file by default.</small>"
         ))
-        grid.attach(note, 0, 8, 2, 1)
+        grid.attach(note, 0, 7, 2, 1)
 
         adv_label = Gtk.Label(halign=Gtk.Align.START)
         adv_label.set_markup("<b>Advanced</b>")
-        grid.attach(adv_label, 0, 9, 2, 1)
+        grid.attach(adv_label, 0, 8, 2, 1)
 
         self.dbug = Gtk.CheckButton(label="Debug Mode")
         self.dbug.set_active(self.config["dbug"])
-        grid.attach(self.dbug, 0, 10, 2, 1)
+        grid.attach(self.dbug, 0, 9, 2, 1)
 
         default_button = Gtk.Button(label="Default Settings")
         default_button.connect("clicked", self.on_default_clicked)
-        grid.attach(default_button, 0, 11, 2, 1)
+        grid.attach(default_button, 0, 10, 2, 1)
 
         cancel_button = Gtk.Button(label="Cancel")
         cancel_button.connect("clicked", self.on_cancel_clicked)
-        grid.attach(cancel_button, 0, 12, 1, 1)
+        grid.attach(cancel_button, 0, 11, 1, 1)
 
         select_button = Gtk.Button(label="Save")
         select_button.connect("clicked", self.on_save_clicked)
-        grid.attach(select_button, 1, 12, 1, 1)
+        grid.attach(select_button, 1, 11, 1, 1)
 
         self.show_all()
 
@@ -313,7 +294,6 @@ class Preferences(Gtk.Window):
 
     def on_default_clicked(self, widget):
         self.mode.set_active(0)
-        self.comp.set_active(0)
         self.dflt.set_text(expanduser("~"))
         self.key.set_text(join(Fn.homedir, "keys"))
         self.save.set_text("")
@@ -332,7 +312,6 @@ class Preferences(Gtk.Window):
         with open(join(Fn.homedir, "otp.json"), "w") as cfg:
             config = {
                 "mode": self.mode.get_active_text(),
-                "comp": self.comp.get_active_text(),
                 "dflt": self.dflt.get_text(),
                 "keys": self.key.get_text(),
                 "save": self.save.get_text(),
@@ -523,35 +502,16 @@ class Encrypt(Gtk.Box):
             self.dir_button.set_current_folder(self.config["save"])
         grid.attach(self.dir_button, 1, 2, 1, 1)
 
-        alg_label = Gtk.Label(halign=Gtk.Align.START)
-        alg_label.set_markup("<b>Compression</b>")
-        alg_scroll = Gtk.Box()
-        alg_scroll.set_size_request(width=-1, height=60)
-        alg_scroll.add(alg_label)
-        grid.attach(alg_scroll, 0, 3, 1, 1)
-
-        self.alg_mode = Gtk.ComboBoxText()
-        self.alg_mode.set_entry_text_column(0)
-        algorithms = [
-            "gzip",
-            "zlib",
-            "lzma",
-            "bzip2",
-            "smallest",
-            "uncompressed"
-        ]
-        for alg in algorithms:
-            self.alg_mode.append_text(alg)
-        self.alg_mode.set_active(algorithms.index(self.config["comp"]))
-        grid.attach(self.alg_mode, 1, 3, 1, 1)
-
         self.enc_toggle = Gtk.CheckButton(label="Encrypt file names")
         self.enc_toggle.set_active(True)
         grid.attach(self.enc_toggle, 2, 2, 1, 1)
 
         self.del_toggle = Gtk.CheckButton(label="Delete file upon encryption")
         self.del_toggle.set_active(False)
-        grid.attach(self.del_toggle, 2, 3, 1, 1)
+        del_box = Gtk.Box()
+        del_box.set_size_request(width=-1, height=60)
+        del_box.add(self.del_toggle)
+        grid.attach(del_box, 2, 3, 1, 1)
 
         reset_button = Gtk.Button(label="Reset")
         reset_button.connect("clicked", self.win.reset)
@@ -587,7 +547,6 @@ class Encrypt(Gtk.Box):
             dir = self.config["save"]
         else:
             dir = dirname(file)
-        alg_mode = self.alg_mode.get_active_text()
         enc_toggle = self.enc_toggle.get_active()
         del_toggle = self.del_toggle.get_active()
         start = time()
@@ -595,7 +554,6 @@ class Encrypt(Gtk.Box):
             file,
             dir,
             self.config["keys"],
-            alg_mode,
             enc_toggle,
             del_toggle
         )
@@ -949,15 +907,6 @@ class AppWindow(Gtk.ApplicationWindow):
         config = loads(open(join(Fn.homedir, "otp.json"), "r").read())
         # reset encrypt options
         enc = self.encrypt
-        algorithms = [
-            "gzip",
-            "zlib",
-            "lzma",
-            "bzip2",
-            "smallest",
-            "uncompressed"
-        ]
-        enc.alg_mode.set_active(algorithms.index(config["comp"]))
         enc.enc_toggle.set_active(True)
         enc.del_toggle.set_active(False)
         enc.dir_button.unselect_all()
@@ -1030,44 +979,25 @@ class Simple:
             self.dir = Gtk.Entry()
             grid.attach(self.dir, 0, 3, 2, 1)
 
-            alg_label = Gtk.Label(halign=Gtk.Align.START)
-            alg_label.set_markup("<b>Compression</b>")
-            grid.attach(alg_label, 0, 4, 1, 1)
-
-            self.alg_mode = Gtk.ComboBoxText()
-            self.alg_mode.set_entry_text_column(0)
-            algorithms = [
-                "gzip",
-                "zlib",
-                "lzma",
-                "bzip2",
-                "smallest",
-                "uncompressed"
-            ]
-            for alg in algorithms:
-                self.alg_mode.append_text(alg)
-            self.alg_mode.set_active(algorithms.index(self.config["comp"]))
-            grid.attach(self.alg_mode, 1, 4, 1, 1)
-
             self.enc_toggle = Gtk.CheckButton(label="Encrypt file names")
             self.enc_toggle.set_active(True)
-            grid.attach(self.enc_toggle, 0, 5, 2, 1)
+            grid.attach(self.enc_toggle, 0, 4, 2, 1)
 
             self.del_toggle = Gtk.CheckButton(
                 label="Delete file upon encryption"
             )
             self.del_toggle.set_active(False)
-            grid.attach(self.del_toggle, 0, 6, 2, 1)
+            grid.attach(self.del_toggle, 0, 5, 2, 1)
 
             reset_button = Gtk.Button(label="Reset")
             reset_button.connect("clicked", self.win.reset)
-            grid.attach(reset_button, 0, 7, 2, 3)
+            grid.attach(reset_button, 0, 6, 2, 3)
 
             encrypt_button = Gtk.Button(label="Encrypt")
             encrypt_button.connect("clicked", self.on_encrypt_clicked)
             encrypt_button.set_hexpand(True)
             encrypt_button.set_vexpand(True)
-            grid.attach(encrypt_button, 0, 10, 2, 6)
+            grid.attach(encrypt_button, 0, 9, 2, 6)
 
             self.show_all()
 
@@ -1488,15 +1418,6 @@ class Simple:
             enc = self.encrypt
             enc.file.set_text("")
             enc.dir.set_text("")
-            algorithms = [
-                "gzip",
-                "zlib",
-                "lzma",
-                "bzip2",
-                "smallest",
-                "uncompressed"
-            ]
-            enc.alg_mode.set_active(algorithms.index(config["comp"]))
             enc.enc_toggle.set_active(True)
             enc.del_toggle.set_active(False)
             enc.config = config
