@@ -1454,7 +1454,6 @@ class Application(Gtk.Application):
             with open(join(Fn.homedir, "otp.json"), "w") as default:
                 dflt = {
                     "mode": "standard",
-                    "comp": "gzip",
                     "dflt": expanduser("~"),
                     "keys": join(Fn.homedir, "keys"),
                     "save": "",

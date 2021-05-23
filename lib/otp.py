@@ -19,7 +19,7 @@ def generate_key(length):
 
 def xor(message, key):
     """
-    Given a bytes input `message` and `key`, return an OTP-encoded message
+    Given bytes inputs `message` and `key`, return the xor of the two
     """
     xored = b""
     for m, k in zip(message, key):
@@ -33,8 +33,8 @@ def bn(name):
 
 def encrypt_file_name(file, enc_names=False, file_dir="", keys_dir=""):
     """
-    Given a file as a string input, return an OTP-encoded
-    file and corresponding key as file names
+    Given a file as a string input, return an OTP-encoded file and
+    corresponding key as file names
     """
     name = bn(file)
     key = generate_key(len(name.encode()))
@@ -51,7 +51,7 @@ def encrypt_file_name(file, enc_names=False, file_dir="", keys_dir=""):
 
 def decrypt_file_name(file, key_file, file_dir=""):
     """
-    Given a string file and corresponding key, return the decrypted file
+    Given a string file and corresponding key, return the decrypted file name
     """
     if bn(file)[-4:] == ".otp":
         file_name = bn(file)[:-4].encode()
@@ -76,8 +76,8 @@ def encrypt_file(
     del_toggle=False
 ):
     """
-    Given a file, writes the encrypted message and corresponding
-    key to separate files
+    Given a file, writes the encrypted message and corresponding key to
+    separate files
     """
     msg = open(file, "rb").read()
     key = generate_key(len(msg))
@@ -113,8 +113,8 @@ def decrypt_file(
     del_toggle=False
 ):
     """
-    Given a file and key file, reads the encrypted message from
-    file using the key from key_file
+    Given a file and key file, reads the encrypted message from file using the
+    key from key_file
     """
     msg = open(file, "rb").read()
     key = open(key_file, "rb").read()
