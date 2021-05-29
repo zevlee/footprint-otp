@@ -44,8 +44,7 @@ def encrypt_file_name(file, enc_names=False, file_dir="", keys_dir=""):
         enc_file = f"{join(file_dir, encrypted)}.otp"
     else:
         enc_file = f"{join(file_dir, name)}.otp"
-    key = urlsafe_b64encode(key).decode()
-    key_file = f"{join(keys_dir, key)}.key"
+    key_file = f"{join(keys_dir, key.decode())}.key"
     return enc_file, key_file
 
 
@@ -59,9 +58,7 @@ def decrypt_file_name(file, key_file, file_dir=""):
         file_name = bn(file).encode()
     key = bn(key_file[:-4]).encode()
     try:
-        dec_file = xor(
-            urlsafe_b64decode(file_name), urlsafe_b64decode(key)
-        ).decode()
+        dec_file = xor(urlsafe_b64decode(file_name), key).decode()
     except BinasciiError:
         dec_file = file_name.decode()
     dec_file = join(file_dir, dec_file)
