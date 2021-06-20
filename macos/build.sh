@@ -2,7 +2,7 @@
 
 app=footprint-otp
 name="Footprint OTP"
-version=0.1.1
+version=0.1.2
 
 echo "Running pyinstaller..."
 
