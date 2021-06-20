@@ -869,7 +869,7 @@ class AppWindow(Gtk.ApplicationWindow):
             Header(
                 title="Footprint OTP",
                 subtitle="One-Time Pad Encryption",
-                version="Version 0.1.0",
+                version="Version 0.1.2",
                 application=app,
                 window=self
             )
@@ -1380,7 +1380,7 @@ class Simple:
                 Header(
                     title="Footprint OTP",
                     subtitle="One-Time Pad Encryption",
-                    version="Version 0.1.0",
+                    version="Version 0.1.2",
                     application=app,
                     window=self
                 )
