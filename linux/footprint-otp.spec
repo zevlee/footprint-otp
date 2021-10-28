@@ -13,6 +13,7 @@ a = Analysis(
 		('../gui/menu.xml', 'gui'),
 		('../footprint-otp.svg', '.'),
 		('../LICENSE', '.'),
+		('../VERSION', '.'),
 		('footprint-otp.desktop', '.'),
 		('.DirIcon', '.')
   ],

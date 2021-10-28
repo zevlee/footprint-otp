@@ -1,7 +1,8 @@
 #!/bin/sh
 
 app=footprint-otp
-version=0.1.2
+
+version=$(cat ../VERSION)
 
 echo "Running pyinstaller..."
 

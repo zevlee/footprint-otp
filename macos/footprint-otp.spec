@@ -12,7 +12,8 @@ a = Analysis(
 		('../lib/otp.py', 'lib'),
 		('../gui/menu.xml', 'gui'),
 		('../footprint-otp.svg', '.'),
-		('../LICENSE', '.')
+		('../LICENSE', '.'),
+		('../VERSION', '.')
   ],
   hiddenimports=[],
   hookspath=[],

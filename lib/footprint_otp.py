@@ -18,6 +18,7 @@ from gi.repository.GdkPixbuf import Pixbuf
 class Fn:
 
     homedir = join(expanduser("~"), ".footprint-otp")
+    version = open(join(dirname(__file__), "..", "VERSION")).read()
 
     @staticmethod
     def bn(name):
@@ -869,7 +870,7 @@ class AppWindow(Gtk.ApplicationWindow):
             Header(
                 title="Footprint OTP",
                 subtitle="One-Time Pad Encryption",
-                version="Version 0.1.2",
+                version="Version " + Fn.version,
                 application=app,
                 window=self
             )
@@ -1380,7 +1381,7 @@ class Simple:
                 Header(
                     title="Footprint OTP",
                     subtitle="One-Time Pad Encryption",
-                    version="Version 0.1.2",
+                    version="Version " + Fn.version,
                     application=app,
                     window=self
                 )
