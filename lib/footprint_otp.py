@@ -1091,7 +1091,6 @@ class SimpleEncrypt(Gtk.Box):
             dir = self.config["save"]
         else:
             dir = dirname(file)
-        alg_mode = self.alg_mode.get_active_text()
         enc_toggle = self.enc_toggle.get_active()
         del_toggle = self.del_toggle.get_active()
         start = time()
@@ -1099,7 +1098,6 @@ class SimpleEncrypt(Gtk.Box):
             file,
             dir,
             self.config["keys"],
-            alg_mode,
             enc_toggle,
             del_toggle
         )
@@ -1162,6 +1160,7 @@ class SimpleEncrypt(Gtk.Box):
                 dialog.destroy()
         else:
             self.encrypt()
+
 
 class SimpleDecrypt(Gtk.Box):
 
@@ -1400,6 +1399,7 @@ class SimpleDecrypt(Gtk.Box):
                 dialog.destroy()
         else:
             self.decrypt()
+
 
 class SimpleAppWindow(Gtk.ApplicationWindow):
 
