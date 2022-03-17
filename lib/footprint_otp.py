@@ -17,7 +17,9 @@ from gi.repository.GdkPixbuf import Pixbuf
 
 class Fn:
 
+    # home directory
     homedir = join(expanduser("~"), ".footprint-otp")
+    # application version
     version = open(join(dirname(__file__), "..", "VERSION")).read()
 
     @staticmethod
@@ -49,6 +51,7 @@ class Header(Gtk.HeaderBar):
         self.set_subtitle(subtitle)
         self.set_show_close_button(True)
 
+        # create menu
         action = Gio.SimpleAction.new("log", None)
         action.connect("activate", self.on_log)
         self.app.add_action(action)
@@ -81,6 +84,7 @@ class Header(Gtk.HeaderBar):
             )
         )
         menu_button.set_menu_model(menu)
+        # window decoration layout
         if system() == "Darwin":
             self.set_decoration_layout("close,minimize,maximize:")
             self.pack_start(menu_button)
@@ -89,17 +93,26 @@ class Header(Gtk.HeaderBar):
             self.pack_end(menu_button)
 
     def on_log(self, action, param):
+        """
+        Open file log dialog
+        """
         win = FileLog()
         win.present()
 
     def on_prefs(self, action, param):
+        """
+        Open preferences dialog
+        """
         prefs = Preferences()
         prefs.connect("destroy", self.win.reset)
         prefs.present()
 
     def on_switch(self, action, param):
+        """
+        Change application mode
+        """
         if self.win.mode == "standard":
-            win = Simple().AppWindow(
+            win = SimpleAppWindow(
                 self.app,
                 self.win.stack.get_visible_child_name()
             )
@@ -112,6 +125,9 @@ class Header(Gtk.HeaderBar):
         self.win.destroy()
 
     def on_about(self, action, param):
+        """
+        Open about dialog
+        """
         about = Gtk.AboutDialog(modal=True)
         about.set_position(Gtk.WindowPosition.CENTER)
         file = join(dirname(__file__), "..", "footprint-otp.svg")
@@ -142,6 +158,7 @@ class Preferences(Gtk.Window):
         self.set_modal(True)
         self.set_keep_above(True)
 
+        # open stored preferences
         self.config = loads(open(join(Fn.homedir, "otp.json"), "r").read())
 
         grid = Gtk.Grid()
@@ -294,6 +311,9 @@ class Preferences(Gtk.Window):
         dialog.destroy()
 
     def on_default_clicked(self, widget):
+        """
+        Reset options to default
+        """
         self.mode.set_active(0)
         self.dflt.set_text(expanduser("~"))
         self.key.set_text(join(Fn.homedir, "keys"))
@@ -301,9 +321,15 @@ class Preferences(Gtk.Window):
         self.dbug.set_active(False)
 
     def on_cancel_clicked(self, widget):
+        """
+        Close without saving
+        """
         self.destroy()
 
     def save_prefs(self):
+        """
+        Save preferences then close
+        """
         if not exists(self.dflt.get_text()):
             raise FileNotFoundError
         if not exists(self.key.get_text()):
@@ -323,6 +349,9 @@ class Preferences(Gtk.Window):
         self.destroy()
 
     def on_save_clicked(self, widget):
+        """
+        When clicked, call `save_prefs`
+        """
         config = loads(open(join(Fn.homedir, "otp.json"), "r").read())
         if not config["dbug"]:
             try:
@@ -905,6 +934,9 @@ class AppWindow(Gtk.ApplicationWindow):
         self.show_all()
 
     def reset(self, widget):
+        """
+        Reset options
+        """
         config = loads(open(join(Fn.homedir, "otp.json"), "r").read())
         # reset encrypt options
         enc = self.encrypt
@@ -926,6 +958,10 @@ class AppWindow(Gtk.ApplicationWindow):
         dec.config = config
 
     def dir_sync(self, action, param):
+        """
+        Ensure that directory stays the same when switching between encrypt and
+        decrypt modes
+        """
         enc = self.encrypt
         dec = self.decrypt
         try:
@@ -941,300 +977,297 @@ class AppWindow(Gtk.ApplicationWindow):
             pass
 
 
-class Simple:
+class SimpleEncrypt(Gtk.Box):
 
-    class Encrypt(Gtk.Box):
+    def __init__(self, app, win):
+        Gtk.Box.__init__(self)
 
-        def __init__(self, app, win):
-            Gtk.Box.__init__(self)
+        self.app = app
+        self.win = win
 
-            self.app = app
-            self.win = win
+        self.config = loads(open(join(Fn.homedir, "otp.json"), "r").read())
 
-            self.config = loads(open(join(Fn.homedir, "otp.json"), "r").read())
+        grid = Gtk.Grid()
+        self.add(grid)
+        grid.set_row_spacing(20)
+        grid.set_column_spacing(20)
 
-            grid = Gtk.Grid()
-            self.add(grid)
-            grid.set_row_spacing(20)
-            grid.set_column_spacing(20)
+        file_label = Gtk.Label(halign=Gtk.Align.START)
+        file_label.set_markup("<b>Choose the file to encrypt</b>")
+        grid.attach(file_label, 0, 0, 1, 1)
 
-            file_label = Gtk.Label(halign=Gtk.Align.START)
-            file_label.set_markup("<b>Choose the file to encrypt</b>")
-            grid.attach(file_label, 0, 0, 1, 1)
+        file_button = Gtk.Button(label="Choose File")
+        file_button.connect("clicked", self.on_file_clicked)
+        grid.attach(file_button, 1, 0, 1, 1)
 
-            file_button = Gtk.Button(label="Choose File")
-            file_button.connect("clicked", self.on_file_clicked)
-            grid.attach(file_button, 1, 0, 1, 1)
+        self.file = Gtk.Entry()
+        grid.attach(self.file, 0, 1, 2, 1)
 
-            self.file = Gtk.Entry()
-            grid.attach(self.file, 0, 1, 2, 1)
+        dir_label = Gtk.Label(halign=Gtk.Align.START)
+        dir_label.set_markup("<b>Save Location</b>")
+        grid.attach(dir_label, 0, 2, 1, 1)
 
-            dir_label = Gtk.Label(halign=Gtk.Align.START)
-            dir_label.set_markup("<b>Save Location</b>")
-            grid.attach(dir_label, 0, 2, 1, 1)
+        dir_button = Gtk.Button(label="Choose Directory")
+        dir_button.connect("clicked", self.on_dir_clicked)
+        grid.attach(dir_button, 1, 2, 1, 1)
 
-            dir_button = Gtk.Button(label="Choose Directory")
-            dir_button.connect("clicked", self.on_dir_clicked)
-            grid.attach(dir_button, 1, 2, 1, 1)
+        self.dir = Gtk.Entry()
+        grid.attach(self.dir, 0, 3, 2, 1)
 
-            self.dir = Gtk.Entry()
-            grid.attach(self.dir, 0, 3, 2, 1)
+        self.enc_toggle = Gtk.CheckButton(label="Encrypt file names")
+        self.enc_toggle.set_active(True)
+        grid.attach(self.enc_toggle, 0, 4, 2, 1)
 
-            self.enc_toggle = Gtk.CheckButton(label="Encrypt file names")
-            self.enc_toggle.set_active(True)
-            grid.attach(self.enc_toggle, 0, 4, 2, 1)
+        self.del_toggle = Gtk.CheckButton(
+            label="Delete file upon encryption"
+        )
+        self.del_toggle.set_active(False)
+        grid.attach(self.del_toggle, 0, 5, 2, 1)
 
-            self.del_toggle = Gtk.CheckButton(
-                label="Delete file upon encryption"
-            )
-            self.del_toggle.set_active(False)
-            grid.attach(self.del_toggle, 0, 5, 2, 1)
+        reset_button = Gtk.Button(label="Reset")
+        reset_button.connect("clicked", self.win.reset)
+        grid.attach(reset_button, 0, 6, 2, 3)
 
-            reset_button = Gtk.Button(label="Reset")
-            reset_button.connect("clicked", self.win.reset)
-            grid.attach(reset_button, 0, 6, 2, 3)
+        encrypt_button = Gtk.Button(label="Encrypt")
+        encrypt_button.connect("clicked", self.on_encrypt_clicked)
+        encrypt_button.set_hexpand(True)
+        encrypt_button.set_vexpand(True)
+        grid.attach(encrypt_button, 0, 9, 2, 6)
 
-            encrypt_button = Gtk.Button(label="Encrypt")
-            encrypt_button.connect("clicked", self.on_encrypt_clicked)
-            encrypt_button.set_hexpand(True)
-            encrypt_button.set_vexpand(True)
-            grid.attach(encrypt_button, 0, 9, 2, 6)
+        self.show_all()
 
-            self.show_all()
+    def on_file_clicked(self, widget):
+        """
+        Open a dialog for user to select file
+        """
+        dialog = Gtk.FileChooserDialog(
+            title="Choose the file to encrypt",
+            parent=None,
+            action=Gtk.FileChooserAction.OPEN
+        )
+        dialog.add_buttons(
+            Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,
+            Gtk.STOCK_OPEN, Gtk.ResponseType.OK,
+        )
+        dialog.set_current_folder(self.config["dflt"])
+        dialog.set_position(Gtk.WindowPosition.CENTER)
+        response = dialog.run()
+        if response == Gtk.ResponseType.OK:
+            file = dialog.get_filename()
+            self.file.set_text(file)
+        dialog.destroy()
 
-        def on_file_clicked(self, widget):
-            """
-            Open a dialog for user to select file
-            """
-            dialog = Gtk.FileChooserDialog(
-                title="Choose the file to encrypt",
-                parent=None,
-                action=Gtk.FileChooserAction.OPEN
-            )
-            dialog.add_buttons(
-                Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,
-                Gtk.STOCK_OPEN, Gtk.ResponseType.OK,
-            )
+    def on_dir_clicked(self, widget):
+        """
+        Open a dialog for user to select directory
+        """
+        dialog = Gtk.FileChooserDialog(
+            title="Choose the save location",
+            parent=None,
+            action=Gtk.FileChooserAction.SELECT_FOLDER
+        )
+        dialog.add_buttons(
+            Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,
+            Gtk.STOCK_OPEN, Gtk.ResponseType.OK,
+        )
+        if exists(self.file.get_text()):
+            dialog.set_current_folder(dirname(self.file.get_text()))
+        elif self.config["save"] != "":
+            dialog.set_current_folder(self.config["save"])
+        else:
             dialog.set_current_folder(self.config["dflt"])
-            dialog.set_position(Gtk.WindowPosition.CENTER)
-            response = dialog.run()
-            if response == Gtk.ResponseType.OK:
-                file = dialog.get_filename()
-                self.file.set_text(file)
-            dialog.destroy()
+        dialog.set_position(Gtk.WindowPosition.CENTER)
+        response = dialog.run()
+        if response == Gtk.ResponseType.OK:
+            dir = dialog.get_filename()
+            self.dir.set_text(dir)
+        dialog.destroy()
 
-        def on_dir_clicked(self, widget):
-            """
-            Open a dialog for user to select directory
-            """
-            dialog = Gtk.FileChooserDialog(
-                title="Choose the save location",
-                parent=None,
-                action=Gtk.FileChooserAction.SELECT_FOLDER
-            )
-            dialog.add_buttons(
-                Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,
-                Gtk.STOCK_OPEN, Gtk.ResponseType.OK,
-            )
-            if exists(self.file.get_text()):
-                dialog.set_current_folder(dirname(self.file.get_text()))
-            elif self.config["save"] != "":
-                dialog.set_current_folder(self.config["save"])
-            else:
-                dialog.set_current_folder(self.config["dflt"])
-            dialog.set_position(Gtk.WindowPosition.CENTER)
-            response = dialog.run()
-            if response == Gtk.ResponseType.OK:
-                dir = dialog.get_filename()
-                self.dir.set_text(dir)
-            dialog.destroy()
+    def encrypt(self):
+        file = self.file.get_text()
+        if self.dir.get_text() != "":
+            dir = self.dir.get_text()
+        elif self.config["save"] != "":
+            dir = self.config["save"]
+        else:
+            dir = dirname(file)
+        alg_mode = self.alg_mode.get_active_text()
+        enc_toggle = self.enc_toggle.get_active()
+        del_toggle = self.del_toggle.get_active()
+        start = time()
+        e, k = encrypt_file(
+            file,
+            dir,
+            self.config["keys"],
+            alg_mode,
+            enc_toggle,
+            del_toggle
+        )
+        elapsed = time() - start
+        elapsed = strftime("%H:%M:%S", gmtime(elapsed))
+        e = Fn.lnbr(Fn.bn(e))
+        k = Fn.lnbr(Fn.bn(k))
+        enc_msg = f"<b>Encrypted</b>\n{e}"
+        key_msg = f"<b>Key</b>\n{k}"
+        time_msg = f"<b>Time</b>\n{elapsed}"
+        msg = f"{enc_msg}\n{key_msg}\n{time_msg}"
+        dialog = Gtk.MessageDialog(
+            transient_for=None,
+            flags=0,
+            message_type=Gtk.MessageType.INFO,
+            buttons=Gtk.ButtonsType.NONE,
+            text="Encryption successful"
+        )
+        dialog.add_buttons(
+            Gtk.STOCK_OK, Gtk.ResponseType.OK,
+            Gtk.STOCK_QUIT, Gtk.ResponseType.CLOSE,
+        )
+        dialog.format_secondary_markup(msg)
+        dialog.set_position(Gtk.WindowPosition.CENTER)
+        response = dialog.run()
+        if response == Gtk.ResponseType.CLOSE:
+            self.app.on_quit(None, None)
+        dialog.destroy()
 
-        def encrypt(self):
-            file = self.file.get_text()
-            if self.dir.get_text() != "":
-                dir = self.dir.get_text()
-            elif self.config["save"] != "":
-                dir = self.config["save"]
-            else:
-                dir = dirname(file)
-            alg_mode = self.alg_mode.get_active_text()
-            enc_toggle = self.enc_toggle.get_active()
-            del_toggle = self.del_toggle.get_active()
-            start = time()
-            e, k = encrypt_file(
-                file,
-                dir,
-                self.config["keys"],
-                alg_mode,
-                enc_toggle,
-                del_toggle
-            )
-            elapsed = time() - start
-            elapsed = strftime("%H:%M:%S", gmtime(elapsed))
-            e = Fn.lnbr(Fn.bn(e))
-            k = Fn.lnbr(Fn.bn(k))
-            enc_msg = f"<b>Encrypted</b>\n{e}"
-            key_msg = f"<b>Key</b>\n{k}"
-            time_msg = f"<b>Time</b>\n{elapsed}"
-            msg = f"{enc_msg}\n{key_msg}\n{time_msg}"
-            dialog = Gtk.MessageDialog(
-                transient_for=None,
-                flags=0,
-                message_type=Gtk.MessageType.INFO,
-                buttons=Gtk.ButtonsType.NONE,
-                text="Encryption successful"
-            )
-            dialog.add_buttons(
-                Gtk.STOCK_OK, Gtk.ResponseType.OK,
-                Gtk.STOCK_QUIT, Gtk.ResponseType.CLOSE,
-            )
-            dialog.format_secondary_markup(msg)
-            dialog.set_position(Gtk.WindowPosition.CENTER)
-            response = dialog.run()
-            if response == Gtk.ResponseType.CLOSE:
-                self.app.on_quit(None, None)
-            dialog.destroy()
-
-        def on_encrypt_clicked(self, widget):
-            """
-            Encrypt the user-selected file and save to the user-selected
-            directory
-            """
-            config = loads(open(join(Fn.homedir, "otp.json"), "r").read())
-            if not config["dbug"]:
-                try:
-                    self.encrypt()
-                except FileNotFoundError:
-                    dialog = Gtk.MessageDialog(
-                        transient_for=None,
-                        flags=0,
-                        message_type=Gtk.MessageType.INFO,
-                        buttons=Gtk.ButtonsType.OK,
-                        text="File not found"
-                    )
-                    dialog.set_position(Gtk.WindowPosition.CENTER)
-                    dialog.run()
-                    dialog.destroy()
-                except Exception:
-                    dialog = Gtk.MessageDialog(
-                        transient_for=None,
-                        flags=0,
-                        message_type=Gtk.MessageType.INFO,
-                        buttons=Gtk.ButtonsType.OK,
-                        text="Unknown error"
-                    )
-                    dialog.set_position(Gtk.WindowPosition.CENTER)
-                    dialog.run()
-                    dialog.destroy()
-            else:
+    def on_encrypt_clicked(self, widget):
+        """
+        Encrypt the user-selected file and save to the user-selected
+        directory
+        """
+        config = loads(open(join(Fn.homedir, "otp.json"), "r").read())
+        if not config["dbug"]:
+            try:
                 self.encrypt()
+            except FileNotFoundError:
+                dialog = Gtk.MessageDialog(
+                    transient_for=None,
+                    flags=0,
+                    message_type=Gtk.MessageType.INFO,
+                    buttons=Gtk.ButtonsType.OK,
+                    text="File not found"
+                )
+                dialog.set_position(Gtk.WindowPosition.CENTER)
+                dialog.run()
+                dialog.destroy()
+            except Exception:
+                dialog = Gtk.MessageDialog(
+                    transient_for=None,
+                    flags=0,
+                    message_type=Gtk.MessageType.INFO,
+                    buttons=Gtk.ButtonsType.OK,
+                    text="Unknown error"
+                )
+                dialog.set_position(Gtk.WindowPosition.CENTER)
+                dialog.run()
+                dialog.destroy()
+        else:
+            self.encrypt()
 
-    class Decrypt(Gtk.Box):
+class SimpleDecrypt(Gtk.Box):
 
-        def __init__(self, app, win):
-            Gtk.Box.__init__(self)
+    def __init__(self, app, win):
+        Gtk.Box.__init__(self)
 
-            self.app = app
-            self.win = win
+        self.app = app
+        self.win = win
 
-            self.config = loads(open(join(Fn.homedir, "otp.json"), "r").read())
+        self.config = loads(open(join(Fn.homedir, "otp.json"), "r").read())
 
-            grid = Gtk.Grid()
-            self.add(grid)
-            grid.set_row_spacing(20)
-            grid.set_column_spacing(20)
+        grid = Gtk.Grid()
+        self.add(grid)
+        grid.set_row_spacing(20)
+        grid.set_column_spacing(20)
 
-            file_label = Gtk.Label(halign=Gtk.Align.START)
-            file_label.set_markup("<b>Choose the file to decrypt</b>")
-            grid.attach(file_label, 0, 0, 1, 1)
+        file_label = Gtk.Label(halign=Gtk.Align.START)
+        file_label.set_markup("<b>Choose the file to decrypt</b>")
+        grid.attach(file_label, 0, 0, 1, 1)
 
-            file_button = Gtk.Button(label="Choose File")
-            file_button.connect("clicked", self.on_file_clicked)
-            grid.attach(file_button, 1, 0, 1, 1)
+        file_button = Gtk.Button(label="Choose File")
+        file_button.connect("clicked", self.on_file_clicked)
+        grid.attach(file_button, 1, 0, 1, 1)
 
-            self.file = Gtk.Entry()
-            grid.attach(self.file, 0, 1, 2, 1)
+        self.file = Gtk.Entry()
+        grid.attach(self.file, 0, 1, 2, 1)
 
-            key_label = Gtk.Label(halign=Gtk.Align.START)
-            key_label.set_markup("<b>Choose the key file</b>")
-            grid.attach(key_label, 0, 2, 1, 1)
+        key_label = Gtk.Label(halign=Gtk.Align.START)
+        key_label.set_markup("<b>Choose the key file</b>")
+        grid.attach(key_label, 0, 2, 1, 1)
 
-            key_button = Gtk.Button(label="Choose Key File")
-            key_button.connect("clicked", self.on_key_clicked)
-            grid.attach(key_button, 1, 2, 1, 1)
+        key_button = Gtk.Button(label="Choose Key File")
+        key_button.connect("clicked", self.on_key_clicked)
+        grid.attach(key_button, 1, 2, 1, 1)
 
-            self.key = Gtk.Entry()
-            grid.attach(self.key, 0, 3, 2, 1)
+        self.key = Gtk.Entry()
+        grid.attach(self.key, 0, 3, 2, 1)
 
-            dir_label = Gtk.Label(halign=Gtk.Align.START)
-            dir_label.set_markup("<b>Save Location</b>")
-            grid.attach(dir_label, 0, 4, 1, 1)
+        dir_label = Gtk.Label(halign=Gtk.Align.START)
+        dir_label.set_markup("<b>Save Location</b>")
+        grid.attach(dir_label, 0, 4, 1, 1)
 
-            dir_button = Gtk.Button(label="Choose Directory")
-            dir_button.connect("clicked", self.on_dir_clicked)
-            grid.attach(dir_button, 1, 4, 1, 1)
+        dir_button = Gtk.Button(label="Choose Directory")
+        dir_button.connect("clicked", self.on_dir_clicked)
+        grid.attach(dir_button, 1, 4, 1, 1)
 
-            self.dir = Gtk.Entry()
-            grid.attach(self.dir, 0, 5, 2, 1)
+        self.dir = Gtk.Entry()
+        grid.attach(self.dir, 0, 5, 2, 1)
 
-            self.del_toggle = Gtk.CheckButton(
-                label="Delete files upon decryption"
-            )
-            self.del_toggle.set_active(True)
-            grid.attach(self.del_toggle, 0, 6, 2, 1)
+        self.del_toggle = Gtk.CheckButton(
+            label="Delete files upon decryption"
+        )
+        self.del_toggle.set_active(True)
+        grid.attach(self.del_toggle, 0, 6, 2, 1)
 
-            reset_button = Gtk.Button(label="Reset")
-            reset_button.connect("clicked", self.win.reset)
-            grid.attach(reset_button, 0, 7, 2, 3)
+        reset_button = Gtk.Button(label="Reset")
+        reset_button.connect("clicked", self.win.reset)
+        grid.attach(reset_button, 0, 7, 2, 3)
 
-            decrypt_button = Gtk.Button(label="Decrypt")
-            decrypt_button.connect("clicked", self.on_decrypt_clicked)
-            decrypt_button.set_hexpand(True)
-            decrypt_button.set_vexpand(True)
-            grid.attach(decrypt_button, 0, 10, 2, 6)
+        decrypt_button = Gtk.Button(label="Decrypt")
+        decrypt_button.connect("clicked", self.on_decrypt_clicked)
+        decrypt_button.set_hexpand(True)
+        decrypt_button.set_vexpand(True)
+        grid.attach(decrypt_button, 0, 10, 2, 6)
 
-            self.show_all()
+        self.show_all()
 
-        def filter(self, dialog, type):
-            """
-            Filter for the file selection dialog
-            """
-            if type == "e":
-                filter_enc = Gtk.FileFilter()
-                filter_enc.set_name("OTP encrypted files (.otp)")
-                filter_enc.add_pattern("*.otp")
-                dialog.add_filter(filter_enc)
-            elif type == "k":
-                filter_key = Gtk.FileFilter()
-                filter_key.set_name("OTP keys (.key)")
-                filter_key.add_pattern("*.key")
-                dialog.add_filter(filter_key)
-            filter_all = Gtk.FileFilter()
-            filter_all.set_name("All files")
-            filter_all.add_pattern("*")
-            dialog.add_filter(filter_all)
+    def filter(self, dialog, type):
+        """
+        Filter for the file selection dialog
+        """
+        if type == "e":
+            filter_enc = Gtk.FileFilter()
+            filter_enc.set_name("OTP encrypted files (.otp)")
+            filter_enc.add_pattern("*.otp")
+            dialog.add_filter(filter_enc)
+        elif type == "k":
+            filter_key = Gtk.FileFilter()
+            filter_key.set_name("OTP keys (.key)")
+            filter_key.add_pattern("*.key")
+            dialog.add_filter(filter_key)
+        filter_all = Gtk.FileFilter()
+        filter_all.set_name("All files")
+        filter_all.add_pattern("*")
+        dialog.add_filter(filter_all)
 
-        def on_file_clicked(self, widget):
-            """
-            Open a dialog for user to select file
-            """
-            dialog = Gtk.FileChooserDialog(
-                title="Choose the file to decrypt",
-                parent=None,
-                action=Gtk.FileChooserAction.OPEN
-            )
-            dialog.add_buttons(
-                Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,
-                Gtk.STOCK_OPEN, Gtk.ResponseType.OK,
-            )
-            dialog.set_current_folder(self.config["dflt"])
-            dialog.set_position(Gtk.WindowPosition.CENTER)
-            self.filter(dialog, "e")
-            response = dialog.run()
-            if response == Gtk.ResponseType.OK:
-                file = dialog.get_filename()
-                self.file.set_text(file)
-            dialog.destroy()
+    def on_file_clicked(self, widget):
+        """
+        Open a dialog for user to select file
+        """
+        dialog = Gtk.FileChooserDialog(
+            title="Choose the file to decrypt",
+            parent=None,
+            action=Gtk.FileChooserAction.OPEN
+        )
+        dialog.add_buttons(
+            Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,
+            Gtk.STOCK_OPEN, Gtk.ResponseType.OK,
+        )
+        dialog.set_current_folder(self.config["dflt"])
+        dialog.set_position(Gtk.WindowPosition.CENTER)
+        self.filter(dialog, "e")
+        response = dialog.run()
+        if response == Gtk.ResponseType.OK:
+            file = dialog.get_filename()
+            self.file.set_text(file)
             # Attempt to find key file
             log = open(join(Fn.homedir, "otp.log"), "r").readlines()
             bn_log = [Fn.bn(line[:-1]) for line in log]
@@ -1243,192 +1276,193 @@ class Simple:
                 self.key.set_text(join(self.config["keys"], bn_log[key_ind]))
             elif exists(log[key_ind][:-1]):
                 self.key.set_text(exists(log[key_ind][:-1]))
+        dialog.destroy()
 
-        def on_key_clicked(self, widget):
-            """
-            Open a dialog for user to select key
-            """
-            dialog = Gtk.FileChooserDialog(
-                title="Choose the key file",
-                parent=None,
-                action=Gtk.FileChooserAction.OPEN
-            )
-            dialog.add_buttons(
-                Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,
-                Gtk.STOCK_OPEN, Gtk.ResponseType.OK,
-            )
-            dialog.set_current_folder(self.config["keys"])
-            self.filter(dialog, "k")
-            dialog.set_position(Gtk.WindowPosition.CENTER)
-            response = dialog.run()
-            if response == Gtk.ResponseType.OK:
-                key = dialog.get_filename()
-                self.key.set_text(key)
-            dialog.destroy()
+    def on_key_clicked(self, widget):
+        """
+        Open a dialog for user to select key
+        """
+        dialog = Gtk.FileChooserDialog(
+            title="Choose the key file",
+            parent=None,
+            action=Gtk.FileChooserAction.OPEN
+        )
+        dialog.add_buttons(
+            Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,
+            Gtk.STOCK_OPEN, Gtk.ResponseType.OK,
+        )
+        dialog.set_current_folder(self.config["keys"])
+        self.filter(dialog, "k")
+        dialog.set_position(Gtk.WindowPosition.CENTER)
+        response = dialog.run()
+        if response == Gtk.ResponseType.OK:
+            key = dialog.get_filename()
+            self.key.set_text(key)
+        dialog.destroy()
 
-        def on_dir_clicked(self, widget):
-            """
-            Open a dialog for user to select directory
-            """
-            dialog = Gtk.FileChooserDialog(
-                title="Choose the save location",
-                parent=None,
-                action=Gtk.FileChooserAction.SELECT_FOLDER
-            )
-            dialog.add_buttons(
-                Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,
-                Gtk.STOCK_OPEN, Gtk.ResponseType.OK,
-            )
-            if exists(self.file.get_text()):
-                dialog.set_current_folder(dirname(self.file.get_text()))
-            elif self.config["save"] != "":
-                dialog.set_current_folder(self.config["save"])
-            else:
-                dialog.set_current_folder(self.config["dflt"])
-            dialog.set_position(Gtk.WindowPosition.CENTER)
-            response = dialog.run()
-            if response == Gtk.ResponseType.OK:
-                dir = dialog.get_filename()
-                self.dir.set_text(dir)
-            dialog.destroy()
+    def on_dir_clicked(self, widget):
+        """
+        Open a dialog for user to select directory
+        """
+        dialog = Gtk.FileChooserDialog(
+            title="Choose the save location",
+            parent=None,
+            action=Gtk.FileChooserAction.SELECT_FOLDER
+        )
+        dialog.add_buttons(
+            Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,
+            Gtk.STOCK_OPEN, Gtk.ResponseType.OK,
+        )
+        if exists(self.file.get_text()):
+            dialog.set_current_folder(dirname(self.file.get_text()))
+        elif self.config["save"] != "":
+            dialog.set_current_folder(self.config["save"])
+        else:
+            dialog.set_current_folder(self.config["dflt"])
+        dialog.set_position(Gtk.WindowPosition.CENTER)
+        response = dialog.run()
+        if response == Gtk.ResponseType.OK:
+            dir = dialog.get_filename()
+            self.dir.set_text(dir)
+        dialog.destroy()
 
-        def decrypt(self):
-            file = self.file.get_text()
-            key = self.key.get_text()
-            if self.dir.get_text() != "":
-                dir = self.dir.get_text()
-            elif self.config["save"] != "":
-                dir = self.config["save"]
-            else:
-                dir = dirname(file)
-            del_toggle = self.del_toggle.get_active()
-            start = time()
-            d = decrypt_file(
-                file,
-                key,
-                dir,
-                del_toggle
-            )
-            elapsed = time() - start
-            elapsed = strftime("%H:%M:%S", gmtime(elapsed))
-            d = Fn.lnbr(Fn.bn(d))
-            dec_msg = f"<b>Decrypted</b>\n{d}"
-            time_msg = f"<b>Time</b>\n{elapsed}"
-            msg = f"{dec_msg}\n{time_msg}"
-            dialog = Gtk.MessageDialog(
-                transient_for=None,
-                flags=0,
-                message_type=Gtk.MessageType.INFO,
-                buttons=Gtk.ButtonsType.NONE,
-                text="Decryption successful"
-            )
-            dialog.add_buttons(
-                Gtk.STOCK_OK, Gtk.ResponseType.OK,
-                Gtk.STOCK_QUIT, Gtk.ResponseType.CLOSE,
-            )
-            dialog.format_secondary_markup(msg)
-            dialog.set_position(Gtk.WindowPosition.CENTER)
-            response = dialog.run()
-            if response == Gtk.ResponseType.CLOSE:
-                self.app.on_quit(None, None)
-            dialog.destroy()
+    def decrypt(self):
+        file = self.file.get_text()
+        key = self.key.get_text()
+        if self.dir.get_text() != "":
+            dir = self.dir.get_text()
+        elif self.config["save"] != "":
+            dir = self.config["save"]
+        else:
+            dir = dirname(file)
+        del_toggle = self.del_toggle.get_active()
+        start = time()
+        d = decrypt_file(
+            file,
+            key,
+            dir,
+            del_toggle
+        )
+        elapsed = time() - start
+        elapsed = strftime("%H:%M:%S", gmtime(elapsed))
+        d = Fn.lnbr(Fn.bn(d))
+        dec_msg = f"<b>Decrypted</b>\n{d}"
+        time_msg = f"<b>Time</b>\n{elapsed}"
+        msg = f"{dec_msg}\n{time_msg}"
+        dialog = Gtk.MessageDialog(
+            transient_for=None,
+            flags=0,
+            message_type=Gtk.MessageType.INFO,
+            buttons=Gtk.ButtonsType.NONE,
+            text="Decryption successful"
+        )
+        dialog.add_buttons(
+            Gtk.STOCK_OK, Gtk.ResponseType.OK,
+            Gtk.STOCK_QUIT, Gtk.ResponseType.CLOSE,
+        )
+        dialog.format_secondary_markup(msg)
+        dialog.set_position(Gtk.WindowPosition.CENTER)
+        response = dialog.run()
+        if response == Gtk.ResponseType.CLOSE:
+            self.app.on_quit(None, None)
+        dialog.destroy()
 
-        def on_decrypt_clicked(self, widget):
-            """
-            Decrypt the user-selected file and save to the user-selected
-            directory
-            """
-            config = loads(open(join(Fn.homedir, "otp.json"), "r").read())
-            if not config["dbug"]:
-                try:
-                    self.decrypt()
-                except FileNotFoundError:
-                    dialog = Gtk.MessageDialog(
-                        transient_for=None,
-                        flags=0,
-                        message_type=Gtk.MessageType.INFO,
-                        buttons=Gtk.ButtonsType.OK,
-                        text="File not found"
-                    )
-                    dialog.set_position(Gtk.WindowPosition.CENTER)
-                    dialog.run()
-                    dialog.destroy()
-                except Exception:
-                    dialog = Gtk.MessageDialog(
-                        transient_for=None,
-                        flags=0,
-                        message_type=Gtk.MessageType.INFO,
-                        buttons=Gtk.ButtonsType.OK,
-                        text="Invalid file combination"
-                    )
-                    dialog.set_position(Gtk.WindowPosition.CENTER)
-                    dialog.run()
-                    dialog.destroy()
-            else:
+    def on_decrypt_clicked(self, widget):
+        """
+        Decrypt the user-selected file and save to the user-selected
+        directory
+        """
+        config = loads(open(join(Fn.homedir, "otp.json"), "r").read())
+        if not config["dbug"]:
+            try:
                 self.decrypt()
-
-    class AppWindow(Gtk.ApplicationWindow):
-
-        def __init__(self, app, enc_dec="encrypt"):
-            Gtk.Window.__init__(self, application=app)
-            self.set_icon_from_file(
-                join(dirname(__file__), "..", "footprint-otp.svg")
-            )
-            self.set_border_width(40)
-            self.set_position(Gtk.WindowPosition.CENTER)
-            self.set_resizable(True)
-            self.set_titlebar(
-                Header(
-                    title="Footprint OTP",
-                    subtitle="One-Time Pad Encryption",
-                    version="Version " + Fn.version,
-                    application=app,
-                    window=self
+            except FileNotFoundError:
+                dialog = Gtk.MessageDialog(
+                    transient_for=None,
+                    flags=0,
+                    message_type=Gtk.MessageType.INFO,
+                    buttons=Gtk.ButtonsType.OK,
+                    text="File not found"
                 )
+                dialog.set_position(Gtk.WindowPosition.CENTER)
+                dialog.run()
+                dialog.destroy()
+            except Exception:
+                dialog = Gtk.MessageDialog(
+                    transient_for=None,
+                    flags=0,
+                    message_type=Gtk.MessageType.INFO,
+                    buttons=Gtk.ButtonsType.OK,
+                    text="Invalid file combination"
+                )
+                dialog.set_position(Gtk.WindowPosition.CENTER)
+                dialog.run()
+                dialog.destroy()
+        else:
+            self.decrypt()
+
+class SimpleAppWindow(Gtk.ApplicationWindow):
+
+    def __init__(self, app, enc_dec="encrypt"):
+        Gtk.Window.__init__(self, application=app)
+        self.set_icon_from_file(
+            join(dirname(__file__), "..", "footprint-otp.svg")
+        )
+        self.set_border_width(40)
+        self.set_position(Gtk.WindowPosition.CENTER)
+        self.set_resizable(True)
+        self.set_titlebar(
+            Header(
+                title="Footprint OTP",
+                subtitle="One-Time Pad Encryption",
+                version="Version " + Fn.version,
+                application=app,
+                window=self
             )
-            self.mode = "simple"
-            self.enc_dec = enc_dec
+        )
+        self.mode = "simple"
+        self.enc_dec = enc_dec
 
-            vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=20)
-            self.add(vbox)
+        vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=20)
+        self.add(vbox)
 
-            self.stack = Gtk.Stack()
-            self.stack.set_transition_type(
-                Gtk.StackTransitionType.SLIDE_LEFT_RIGHT
-            )
+        self.stack = Gtk.Stack()
+        self.stack.set_transition_type(
+            Gtk.StackTransitionType.SLIDE_LEFT_RIGHT
+        )
 
-            self.encrypt = Simple().Encrypt(app, self)
-            self.stack.add_titled(self.encrypt, "encrypt", "Encrypt")
+        self.encrypt = SimpleEncrypt(app, self)
+        self.stack.add_titled(self.encrypt, "encrypt", "Encrypt")
 
-            self.decrypt = Simple().Decrypt(app, self)
-            self.stack.add_titled(self.decrypt, "decrypt", "Decrypt")
+        self.decrypt = SimpleDecrypt(app, self)
+        self.stack.add_titled(self.decrypt, "decrypt", "Decrypt")
 
-            switcher = Gtk.StackSwitcher()
-            switcher.set_stack(self.stack)
+        switcher = Gtk.StackSwitcher()
+        switcher.set_stack(self.stack)
 
-            vbox.pack_start(switcher, False, False, 0)
-            vbox.pack_start(self.stack, True, True, 0)
+        vbox.pack_start(switcher, False, False, 0)
+        vbox.pack_start(self.stack, True, True, 0)
 
-            self.stack.set_visible_child_name(enc_dec)
+        self.stack.set_visible_child_name(enc_dec)
 
-            self.show_all()
+        self.show_all()
 
-        def reset(self, action):
-            config = loads(open(join(Fn.homedir, "otp.json"), "r").read())
-            # reset encrypt options
-            enc = self.encrypt
-            enc.file.set_text("")
-            enc.dir.set_text("")
-            enc.enc_toggle.set_active(True)
-            enc.del_toggle.set_active(False)
-            enc.config = config
-            # reset decrypt options
-            dec = self.decrypt
-            dec.file.set_text("")
-            dec.key.set_text("")
-            dec.dir.set_text("")
-            dec.del_toggle.set_active(True)
-            dec.config = config
+    def reset(self, action):
+        config = loads(open(join(Fn.homedir, "otp.json"), "r").read())
+        # reset encrypt options
+        enc = self.encrypt
+        enc.file.set_text("")
+        enc.dir.set_text("")
+        enc.enc_toggle.set_active(True)
+        enc.del_toggle.set_active(False)
+        enc.config = config
+        # reset decrypt options
+        dec = self.decrypt
+        dec.file.set_text("")
+        dec.key.set_text("")
+        dec.dir.set_text("")
+        dec.del_toggle.set_active(True)
+        dec.config = config
 
 
 class Application(Gtk.Application):
@@ -1470,7 +1504,7 @@ class Application(Gtk.Application):
         if mode == "standard":
             win = AppWindow(self)
         else:
-            win = Simple().AppWindow(self)
+            win = SimpleAppWindow(self)
         win.present()
 
     def on_quit(self, action, param):
