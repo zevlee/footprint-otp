@@ -4,7 +4,6 @@ from lib.otp import encrypt_file, decrypt_file
 from os import mkdir, remove
 from os.path import dirname, join, basename, normpath, exists, expanduser
 from platform import system
-from subprocess import call
 from json import loads, dumps
 from textwrap import TextWrapper
 from time import time, strftime, gmtime
@@ -17,8 +16,15 @@ from gi.repository.GdkPixbuf import Pixbuf
 
 class Fn:
 
-    # home directory
-    homedir = join(expanduser("~"), ".footprint-otp")
+    # config and data directories
+    if system() == "Darwin":
+        conf_dir = expanduser(
+            "~/Library/Application Support/me.zevlee.FootprintOTP"
+        )
+        data_dir = conf_dir
+    else:
+        conf_dir = join(GLib.get_user_config_dir(), "Footprint OTP")
+        data_dir = join(GLib.get_user_data_dir(), "Footprint OTP")
     # application version
     version = open(join(dirname(__file__), "..", "VERSION")).read()
 
@@ -159,7 +165,7 @@ class Preferences(Gtk.Window):
         self.set_keep_above(True)
 
         # open stored preferences
-        self.config = loads(open(join(Fn.homedir, "otp.json"), "r").read())
+        self.config = loads(open(join(Fn.conf_dir, "otp.json"), "r").read())
 
         grid = Gtk.Grid()
         grid.set_column_homogeneous(True)
@@ -316,7 +322,7 @@ class Preferences(Gtk.Window):
         """
         self.mode.set_active(0)
         self.dflt.set_text(expanduser("~"))
-        self.key.set_text(join(Fn.homedir, "keys"))
+        self.key.set_text(join(Fn.data_dir, "keys"))
         self.save.set_text("")
         self.dbug.set_active(False)
 
@@ -336,7 +342,7 @@ class Preferences(Gtk.Window):
             raise FileNotFoundError
         if not exists(self.save.get_text()) and self.save.get_text() != "":
             raise FileNotFoundError
-        with open(join(Fn.homedir, "otp.json"), "w") as cfg:
+        with open(join(Fn.conf_dir, "otp.json"), "w") as cfg:
             config = {
                 "mode": self.mode.get_active_text(),
                 "dflt": self.dflt.get_text(),
@@ -352,7 +358,7 @@ class Preferences(Gtk.Window):
         """
         When clicked, call `save_prefs`
         """
-        config = loads(open(join(Fn.homedir, "otp.json"), "r").read())
+        config = loads(open(join(Fn.conf_dir, "otp.json"), "r").read())
         if not config["dbug"]:
             try:
                 self.save_prefs()
@@ -393,7 +399,7 @@ class FileLog(Gtk.Window):
 
         # list to store log data
         self.store = Gtk.ListStore(str, str, str, str)
-        log_file = join(Fn.homedir, "otp.log")
+        log_file = join(Fn.data_dir, "otp.log")
         if not exists(log_file):
             open(log_file, "w").close()
             log = []
@@ -462,7 +468,7 @@ class FileLog(Gtk.Window):
             confirm.set_position(Gtk.WindowPosition.CENTER)
             response = confirm.run()
             if response == Gtk.ResponseType.OK:
-                old_log = open(join(Fn.homedir, "otp.log"), "r").readlines()
+                old_log = open(join(Fn.data_dir, "otp.log"), "r").readlines()
                 bn_log = [Fn.bn(line[:-1]) for line in old_log]
                 if del_key.get_active():
                     remove(old_log[bn_log.index(self.key)][:-1])
@@ -471,7 +477,7 @@ class FileLog(Gtk.Window):
                 for i in range(5):
                     rmv.append(ind + i)
                 new_log = [j for i, j in enumerate(old_log) if i not in rmv]
-                with open(join(Fn.homedir, "otp.log"), "w") as logfile:
+                with open(join(Fn.data_dir, "otp.log"), "w") as logfile:
                     for line in new_log:
                         logfile.write(line)
                     logfile.close()
@@ -489,7 +495,7 @@ class Encrypt(Gtk.Box):
         self.app = app
         self.win = win
 
-        self.config = loads(open(join(Fn.homedir, "otp.json"), "r").read())
+        self.config = loads(open(join(Fn.conf_dir, "otp.json"), "r").read())
 
         grid = Gtk.Grid()
         self.add(grid)
@@ -584,6 +590,7 @@ class Encrypt(Gtk.Box):
             file,
             dir,
             self.config["keys"],
+            Fn.data_dir,
             enc_toggle,
             del_toggle
         )
@@ -618,7 +625,7 @@ class Encrypt(Gtk.Box):
         Encrypt the user-selected file and save to the user-selected
         directory
         """
-        config = loads(open(join(Fn.homedir, "otp.json"), "r").read())
+        config = loads(open(join(Fn.conf_dir, "otp.json"), "r").read())
         if not config["dbug"]:
             try:
                 self.encrypt()
@@ -679,7 +686,7 @@ class Decrypt(Gtk.Box):
         self.app = app
         self.win = win
 
-        self.config = loads(open(join(Fn.homedir, "otp.json"), "r").read())
+        self.config = loads(open(join(Fn.conf_dir, "otp.json"), "r").read())
 
         grid = Gtk.Grid()
         self.add(grid)
@@ -750,7 +757,7 @@ class Decrypt(Gtk.Box):
     def on_selection(self, widget):
         try:
             self.file = self.chooser.get_filename()
-            log = open(join(Fn.homedir, "otp.log"), "r").readlines()
+            log = open(join(Fn.data_dir, "otp.log"), "r").readlines()
             bn_log = [Fn.bn(line[:-1]) for line in log]
             name_ind = bn_log.index(Fn.bn(self.file)) - 1
             name = log[name_ind][:-1]
@@ -810,6 +817,7 @@ class Decrypt(Gtk.Box):
             file,
             key,
             dir,
+            Fn.data_dir,
             del_toggle
         )
         elapsed = time() - start
@@ -843,7 +851,7 @@ class Decrypt(Gtk.Box):
         Decrypt the user-selected file and save to the user-selected
         directory
         """
-        config = loads(open(join(Fn.homedir, "otp.json"), "r").read())
+        config = loads(open(join(Fn.conf_dir, "otp.json"), "r").read())
         if not config["dbug"]:
             try:
                 self.decrypt()
@@ -937,7 +945,7 @@ class AppWindow(Gtk.ApplicationWindow):
         """
         Reset options
         """
-        config = loads(open(join(Fn.homedir, "otp.json"), "r").read())
+        config = loads(open(join(Fn.conf_dir, "otp.json"), "r").read())
         # reset encrypt options
         enc = self.encrypt
         enc.enc_toggle.set_active(True)
@@ -985,7 +993,7 @@ class SimpleEncrypt(Gtk.Box):
         self.app = app
         self.win = win
 
-        self.config = loads(open(join(Fn.homedir, "otp.json"), "r").read())
+        self.config = loads(open(join(Fn.conf_dir, "otp.json"), "r").read())
 
         grid = Gtk.Grid()
         self.add(grid)
@@ -1098,6 +1106,7 @@ class SimpleEncrypt(Gtk.Box):
             file,
             dir,
             self.config["keys"],
+            Fn.data_dir,
             enc_toggle,
             del_toggle
         )
@@ -1132,7 +1141,7 @@ class SimpleEncrypt(Gtk.Box):
         Encrypt the user-selected file and save to the user-selected
         directory
         """
-        config = loads(open(join(Fn.homedir, "otp.json"), "r").read())
+        config = loads(open(join(Fn.conf_dir, "otp.json"), "r").read())
         if not config["dbug"]:
             try:
                 self.encrypt()
@@ -1170,7 +1179,7 @@ class SimpleDecrypt(Gtk.Box):
         self.app = app
         self.win = win
 
-        self.config = loads(open(join(Fn.homedir, "otp.json"), "r").read())
+        self.config = loads(open(join(Fn.conf_dir, "otp.json"), "r").read())
 
         grid = Gtk.Grid()
         self.add(grid)
@@ -1268,7 +1277,7 @@ class SimpleDecrypt(Gtk.Box):
             file = dialog.get_filename()
             self.file.set_text(file)
             # Attempt to find key file
-            log = open(join(Fn.homedir, "otp.log"), "r").readlines()
+            log = open(join(Fn.data_dir, "otp.log"), "r").readlines()
             bn_log = [Fn.bn(line[:-1]) for line in log]
             key_ind = bn_log.index(Fn.bn(file)) + 1
             if exists(join(self.config["keys"], bn_log[key_ind])):
@@ -1340,6 +1349,7 @@ class SimpleDecrypt(Gtk.Box):
             file,
             key,
             dir,
+            Fn.data_dir,
             del_toggle
         )
         elapsed = time() - start
@@ -1371,7 +1381,7 @@ class SimpleDecrypt(Gtk.Box):
         Decrypt the user-selected file and save to the user-selected
         directory
         """
-        config = loads(open(join(Fn.homedir, "otp.json"), "r").read())
+        config = loads(open(join(Fn.conf_dir, "otp.json"), "r").read())
         if not config["dbug"]:
             try:
                 self.decrypt()
@@ -1448,7 +1458,7 @@ class SimpleAppWindow(Gtk.ApplicationWindow):
         self.show_all()
 
     def reset(self, action):
-        config = loads(open(join(Fn.homedir, "otp.json"), "r").read())
+        config = loads(open(join(Fn.conf_dir, "otp.json"), "r").read())
         # reset encrypt options
         enc = self.encrypt
         enc.file.set_text("")
@@ -1477,30 +1487,28 @@ class Application(Gtk.Application):
     def do_startup(self):
         Gtk.Application.do_startup(self)
         # ensure necessary folders exist
-        if not exists(Fn.homedir):
-            mkdir(Fn.homedir)
-            if system() == "Windows":
-                call(["attrib", "+H", Fn.homedir])
-            elif system() == "Darwin":
-                call(["chflags", "hidden", Fn.homedir])
-        if not exists(join(Fn.homedir, "keys")):
-            mkdir(join(Fn.homedir, "keys"))
-        if not exists(join(Fn.homedir, "otp.json")):
-            with open(join(Fn.homedir, "otp.json"), "w") as default:
+        if not exists(Fn.conf_dir):
+            mkdir(Fn.conf_dir)
+        if not exists(Fn.data_dir):
+            mkdir(Fn.data_dir)
+        if not exists(join(Fn.data_dir, "keys")):
+            mkdir(join(Fn.data_dir, "keys"))
+        if not exists(join(Fn.conf_dir, "otp.json")):
+            with open(join(Fn.conf_dir, "otp.json"), "w") as default:
                 dflt = {
                     "mode": "standard",
                     "dflt": expanduser("~"),
-                    "keys": join(Fn.homedir, "keys"),
+                    "keys": join(Fn.data_dir, "keys"),
                     "save": "",
                     "dbug": False
                 }
                 default.write(dumps(dflt))
                 default.close()
-        if not exists(join(Fn.homedir, "otp.log")):
-            open(join(Fn.homedir, "otp.log"), "w").close()
+        if not exists(join(Fn.data_dir, "otp.log")):
+            open(join(Fn.data_dir, "otp.log"), "w").close()
 
     def do_activate(self):
-        mode = loads(open(join(Fn.homedir, "otp.json"), "r").read())["mode"]
+        mode = loads(open(join(Fn.conf_dir, "otp.json"), "r").read())["mode"]
         if mode == "standard":
             win = AppWindow(self)
         else:

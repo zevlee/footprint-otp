@@ -2,7 +2,7 @@
 
 from base64 import urlsafe_b64encode, urlsafe_b64decode
 from os import remove
-from os.path import splitext, exists, basename, normpath, join, expanduser
+from os.path import splitext, exists, basename, normpath, join
 from secrets import token_urlsafe
 from time import time, ctime
 from binascii import Error as BinasciiError
@@ -69,6 +69,7 @@ def encrypt_file(
     file,
     file_dir="",
     keys_dir="",
+    log_dir="",
     enc_names=False,
     del_toggle=False
 ):
@@ -89,7 +90,7 @@ def encrypt_file(
         k.write(key)
         k.close()
     log = f"{file}\n{enc_file}\n{key_file}\n{ctime(time())}\n\n"
-    log_file = join(expanduser("~"), ".footprint-otp", "otp.log")
+    log_file = join(log_dir, "otp.log")
     try:
         with open(log_file, "a") as logfile:
             logfile.write(log)
@@ -107,6 +108,7 @@ def decrypt_file(
     file,
     key_file,
     file_dir="",
+    log_dir="",
     del_toggle=False
 ):
     """
@@ -121,7 +123,7 @@ def decrypt_file(
         remove(file)
         remove(key_file)
         try:
-            log_file = join(expanduser("~"), ".footprint-otp", "otp.log")
+            log_file = join(log_dir, "otp.log")
             old_log = open(log_file, "r").readlines()
             files = [bn(line[:-1]) for line in old_log]
             # find the index of the file name
