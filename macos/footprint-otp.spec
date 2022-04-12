@@ -55,3 +55,11 @@ coll = COLLECT(
 	upx_exclude=[],
 	name='footprint-otp'
 )
+
+app = BUNDLE(
+	coll,
+	name='Footprint OTP.app',
+	icon='footprint-otp.icns',
+	bundle_identifier='me.zevlee.FootprintOTP',
+	version='VERSION'
+)
