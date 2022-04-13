@@ -145,7 +145,7 @@ class Header(Gtk.HeaderBar):
         license = open(join(dirname(__file__), "..", "LICENSE")).read()
         about.set_license(license)
         about.set_wrap_license(True)
-        about.set_website("https://gitlab.com/zevlee")
+        about.set_website("https://github.com/zevlee/footprint-otp")
         about.set_website_label("Homepage")
         about.present()
 
