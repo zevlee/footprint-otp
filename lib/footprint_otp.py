@@ -141,7 +141,7 @@ class Header(Gtk.HeaderBar):
         about.set_logo(logo)
         about.set_program_name(self.title)
         about.set_version(self.version)
-        about.set_copyright("Copyright © 2021 Zev Lee")
+        about.set_copyright("Copyright © 2021-2022 Zev Lee")
         license = open(join(dirname(__file__), "..", "LICENSE")).read()
         about.set_license(license)
         about.set_wrap_license(True)
