@@ -14,8 +14,7 @@ a = Analysis(
 		('../footprint-otp.svg', '.'),
 		('../LICENSE', '.'),
 		('../VERSION', '.'),
-		('footprint-otp.desktop', '.'),
-		('.DirIcon', '.')
+		('footprint-otp.desktop', '.')
   ],
   hiddenimports=[],
   hookspath=[],
