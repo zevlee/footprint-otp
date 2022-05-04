@@ -64,7 +64,7 @@ git clone https://github.com/zevlee/footprint-otp.git
 ```
 cd footprint-otp/linux
 ```
-4. Run ``bootstrap.sh`` to install pyinstaller via pip if you haven't already.
+4. Run ``bootstrap.sh`` to install any missing dependencies.
 ```
 chmod +x bootstrap.sh && ./bootstrap.sh
 ```
