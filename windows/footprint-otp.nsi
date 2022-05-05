@@ -4,10 +4,11 @@
 !define FILENAME "footprint-otp"
 !define AUTHOR "Zev Lee"
 !define DESCRIPTION "One-time pad encryption GUI application."
+!define INSTALLSIZE 110216
+
+Unicode True
 
 !define /file VERSION "..\VERSION"
-
-!define INSTALLSIZE 105336
 
 InstallDir "$PROGRAMFILES\${APPNAME}"
 
@@ -35,15 +36,13 @@ function .onInit
 	!insertmacro VerifyUserIsAdmin
 functionEnd
 
-!include zipdll.nsh
-
 section "install"
 
 	setOutPath $INSTDIR
 	file "${FILENAME}.ico"
 	file "${FILENAME}.zip"
 
-	ZipDLL::extractall "$INSTDIR\${FILENAME}.zip" "$INSTDIR"
+	nsisunz::Unzip "$INSTDIR\${FILENAME}.zip" "$INSTDIR"
 
 	delete "$INSTDIR\${FILENAME}.zip"
 
