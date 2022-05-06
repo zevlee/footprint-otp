@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 
+from lib.fn import Fn
 from base64 import urlsafe_b64encode, urlsafe_b64decode
 from os import remove
-from os.path import splitext, exists, basename, normpath, join
+from os.path import splitext, exists, join
 from secrets import token_urlsafe
 from time import time, ctime
 from binascii import Error as BinasciiError
@@ -27,16 +28,12 @@ def xor(message, key):
     return xored
 
 
-def bn(name):
-    return basename(normpath(name))
-
-
 def encrypt_file_name(file, enc_names=False, file_dir="", keys_dir=""):
     """
     Given a file as a string input, return an OTP-encoded file and
     corresponding key as file names
     """
-    name = bn(file)
+    name = Fn.bn(file)
     key = generate_key(len(name.encode()))
     if enc_names:
         encrypted = xor(name.encode(), key)
@@ -52,11 +49,11 @@ def decrypt_file_name(file, key_file, file_dir=""):
     """
     Given a string file and corresponding key, return the decrypted file name
     """
-    if bn(file)[-4:] == ".otp":
-        file_name = bn(file)[:-4].encode()
+    if Fn.bn(file)[-4:] == ".otp":
+        file_name = Fn.bn(file)[:-4].encode()
     else:
-        file_name = bn(file).encode()
-    key = bn(key_file[:-4]).encode()
+        file_name = Fn.bn(file).encode()
+    key = Fn.bn(key_file[:-4]).encode()
     try:
         dec_file = xor(urlsafe_b64decode(file_name), key).decode()
     except BinasciiError:
@@ -125,9 +122,9 @@ def decrypt_file(
         try:
             log_file = join(log_dir, "otp.log")
             old_log = open(log_file, "r").readlines()
-            files = [bn(line[:-1]) for line in old_log]
+            files = [Fn.bn(line[:-1]) for line in old_log]
             # find the index of the file name
-            ind = files.index(bn(file)) - 1
+            ind = files.index(Fn.bn(file)) - 1
             # designate the indices of the lines to be removed i.e. the file
             # and the four lines immediately following it
             rmv = []
