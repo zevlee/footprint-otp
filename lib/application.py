@@ -1,48 +1,17 @@
 #!/usr/bin/env python3
 
+from lib.fn import Fn
 from lib.otp import encrypt_file, decrypt_file
 from os import mkdir, remove
-from os.path import dirname, join, basename, normpath, exists, expanduser
+from os.path import dirname, join, exists, expanduser
 from platform import system
 from json import loads, dumps
-from textwrap import TextWrapper
 from time import time, strftime, gmtime
 from binascii import Error as BinasciiError
 from gi import require_version
 require_version("Gtk", "3.0")
 from gi.repository import Gtk, Gio, GLib
 from gi.repository.GdkPixbuf import Pixbuf
-
-
-class Fn:
-
-    # config and data directories
-    if system() == "Darwin":
-        conf_dir = expanduser(
-            "~/Library/Application Support/me.zevlee.FootprintOTP"
-        )
-        data_dir = conf_dir
-    else:
-        conf_dir = join(GLib.get_user_config_dir(), "Footprint OTP")
-        data_dir = join(GLib.get_user_data_dir(), "Footprint OTP")
-    # application version
-    version = open(join(dirname(__file__), "..", "VERSION")).read()
-
-    @staticmethod
-    def bn(name):
-        """
-        Normalize a file path then find the base name
-        """
-        return basename(normpath(name))
-
-    @staticmethod
-    def lnbr(text, char=70):
-        """
-        Given a string `text` and integer `char`, return a string with
-        line breaks every `char` characters
-        """
-        t = TextWrapper(width=char, break_on_hyphens=False)
-        return t.fill(text)
 
 
 class Header(Gtk.HeaderBar):
