@@ -22,10 +22,7 @@ def xor(message, key):
     """
     Given bytes inputs `message` and `key`, return the xor of the two
     """
-    xored = b""
-    for m, k in zip(message, key):
-        xored += chr(m ^ k).encode()
-    return xored
+    return bytes(m ^ k for m, k in zip(message, key))
 
 
 def encrypt_file_name(file, enc_names=False, file_dir="", keys_dir=""):
