@@ -19,7 +19,7 @@ git clone https://github.com/zevlee/footprint-otp.git
 ```
 5. Enter the ``windows`` directory.
 ```
-cd passphraser/windows
+cd footprint-otp/windows
 ```
 6. Run ``bootstrap.sh`` to install any missing dependencies.
 ```
