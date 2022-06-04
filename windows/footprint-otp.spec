@@ -7,12 +7,9 @@ a = Analysis(
 	pathex=[],
 	binaries=[],
 	datas=[
-		('../lib/__init__.py', 'lib'),
-		('../lib/application.py', 'lib'),
-		('../lib/fn.py', 'lib'),
-		('../lib/otp.py', 'lib'),
-		('../gui/menu.xml', 'gui'),
-		('../footprint-otp.svg', '.'),
+		('../gui', 'gui'),
+		('../lib', 'lib'),
+		('../me.zevlee.FootprintOTP.svg', '.'),
 		('../LICENSE', '.'),
 		('../VERSION', '.')
 	],
