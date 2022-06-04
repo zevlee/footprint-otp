@@ -137,6 +137,22 @@ class FileLog(Gtk.Window):
             dialog.connect("response", self._confirm)
             dialog.show()
 
+    def on_select_clicked(self, widget):
+        """
+        Select files for decryption
+        """
+        if self.file is not None:
+            log = open(join(Utils.DATA_DIR, "otp.log"), "r").readlines()
+            bn_log = [Utils.bn(line[:-1]) for line in log]
+            filename = log[bn_log.index(self.file)][:-1]
+            key = log[bn_log.index(self.key)][:-1]
+            self.parent.stack.set_visible_child_name("decrypt")
+            self.parent.decrypt.file.set_text(filename)
+            self.parent.decrypt.key.set_text(key)
+            if self.parent.decrypt.dir.get_text() == "":
+                self.parent.decrypt.dir.set_text(dirname(filename))
+            self.destroy()
+
     def _confirm(self, dialog, response):
         """
         Close upon confirming
@@ -159,19 +175,3 @@ class FileLog(Gtk.Window):
                 logfile.close()
             self.destroy()
         dialog.destroy()
-
-    def on_select_clicked(self, widget):
-        """
-        Select files for decryption
-        """
-        if self.file is not None:
-            log = open(join(Utils.DATA_DIR, "otp.log"), "r").readlines()
-            bn_log = [Utils.bn(line[:-1]) for line in log]
-            filename = log[bn_log.index(self.file)][:-1]
-            key = log[bn_log.index(self.key)][:-1]
-            self.parent.stack.set_visible_child_name("decrypt")
-            self.parent.decrypt.file.set_text(filename)
-            self.parent.decrypt.key.set_text(key)
-            if self.parent.decrypt.dir.get_text() == "":
-                self.parent.decrypt.dir.set_text(dirname(filename))
-            self.destroy()
