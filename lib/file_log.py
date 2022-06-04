@@ -133,6 +133,7 @@ class FileLog(Gtk.Window):
             )
             dialog.del_key.set_active(True)
             dialog.get_content_area().add(dialog.del_key)
+            dialog.set_titlebar(Gtk.HeaderBar(show_title_buttons=False))
             dialog.connect("response", self._confirm)
             dialog.show()
 

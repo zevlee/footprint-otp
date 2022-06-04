@@ -253,6 +253,7 @@ class Decrypt(Gtk.Box):
         dialog.set_markup("<big><b>Decryption successful</b></big>")
         label = Gtk.Label(label=msg, use_markup=True)
         dialog.get_message_area().append(label)
+        dialog.set_titlebar(Gtk.HeaderBar(show_title_buttons=False))
         dialog.connect("response", self._confirm)
         dialog.show()
 
@@ -269,7 +270,7 @@ class Decrypt(Gtk.Box):
                 message_type=Gtk.MessageType.INFO,
                 buttons=Gtk.ButtonsType.OK
             )
-            # dialog.set_titlebar(Gtk.HeaderBar(show_title_buttons=False))
+            dialog.set_titlebar(Gtk.HeaderBar(show_title_buttons=False))
             dialog.connect("response", self._confirm)
             try:
                 self._decrypt_file()

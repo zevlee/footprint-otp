@@ -249,6 +249,7 @@ class Preferences(Gtk.Window):
                 message_type=Gtk.MessageType.INFO,
                 buttons=Gtk.ButtonsType.OK
             )
+            dialog.set_titlebar(Gtk.HeaderBar(show_title_buttons=False))
             dialog.connect("response", self._confirm)
             try:
                 self._save_prefs()
