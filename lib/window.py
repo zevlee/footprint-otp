@@ -16,14 +16,12 @@ from gi.repository import Gtk, Gio
 
 class Window(Gtk.ApplicationWindow):
 
-    def __init__(self, app, mode="encrypt"):
+    def __init__(self, app):
         super().__init__(
             application=app,
             resizable=True,
             title=Utils.NAME
         )
-
-        self.mode = mode
 
         # Add icon
         self.set_icon_name(Utils.ID)
@@ -83,7 +81,6 @@ class Window(Gtk.ApplicationWindow):
         self.decrypt = Decrypt(self)
         self.stack.add_titled(self.encrypt, "encrypt", "Encrypt")
         self.stack.add_titled(self.decrypt, "decrypt", "Decrypt")
-        self.stack.set_visible_child_name(mode)
 
         # Set up stack switcher
         switcher = Gtk.StackSwitcher()
