@@ -127,21 +127,19 @@ class Preferences(Gtk.Window):
         dialog = Gtk.FileChooserDialog(
             title="Choose the default directory",
             transient_for=self,
+            modal=True,
             action=Gtk.FileChooserAction.SELECT_FOLDER
         )
         dialog.add_buttons(
-            Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,
-            Gtk.STOCK_OPEN, Gtk.ResponseType.OK,
+            "_Cancel", Gtk.ResponseType.CANCEL,
+            "_Open", Gtk.ResponseType.OK,
         )
         dialog.set_current_folder(
             Gio.File.new_for_path(self.config["dflt"])
         )
-        dialog.set_keep_above(True)
-        response = dialog.run()
-        if response == Gtk.ResponseType.OK:
-            dflt = dialog.get_filename()
-            self.dflt.set_text(dflt)
-        dialog.destroy()
+        dialog.text_box = self.dflt
+        dialog.connect("response", self._select_dir)
+        dialog.show()
 
     def on_keys_clicked(self, widget):
         """
@@ -150,21 +148,19 @@ class Preferences(Gtk.Window):
         dialog = Gtk.FileChooserDialog(
             title="Choose where to save key files",
             transient_for=self,
+            modal=True,
             action=Gtk.FileChooserAction.SELECT_FOLDER
         )
         dialog.add_buttons(
-            Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,
-            Gtk.STOCK_OPEN, Gtk.ResponseType.OK,
+            "_Cancel", Gtk.ResponseType.CANCEL,
+            "_Open", Gtk.ResponseType.OK,
         )
         dialog.set_current_folder(
             Gio.File.new_for_path(self.config["keys"])
         )
-        dialog.set_keep_above(True)
-        response = dialog.run()
-        if response == Gtk.ResponseType.OK:
-            key = dialog.get_filename()
-            self.keys.set_text(key)
-        dialog.destroy()
+        dialog.text_box = self.keys
+        dialog.connect("response", self._select_dir)
+        dialog.show()
 
     def on_enc_clicked(self, widget):
         """
@@ -173,20 +169,31 @@ class Preferences(Gtk.Window):
         dialog = Gtk.FileChooserDialog(
             title="Choose the default location to save files",
             transient_for=self,
+            modal=True,
             action=Gtk.FileChooserAction.SELECT_FOLDER
         )
         dialog.add_buttons(
-            Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,
-            Gtk.STOCK_OPEN, Gtk.ResponseType.OK,
+            "_Cancel", Gtk.ResponseType.CANCEL,
+            "_Open", Gtk.ResponseType.OK,
         )
-        dialog.set_current_folder(
-            Gio.File.new_for_path(self.config["save"])
-        )
-        dialog.set_keep_above(True)
-        response = dialog.run()
+        if self.config["save"] == "":
+            dialog.set_current_folder(
+                Gio.File.new_for_path(expanduser("~"))
+            )
+        else:
+            dialog.set_current_folder(
+                Gio.File.new_for_path(self.config["save"])
+            )
+        dialog.text_box = self.save
+        dialog.connect("response", self._select_dir)
+        dialog.show()
+
+    def _select_dir(self, dialog, response):
+        """
+        Set file when chosen in dialog
+        """
         if response == Gtk.ResponseType.OK:
-            enc = dialog.get_filename()
-            self.save.set_text(enc)
+            dialog.text_box.set_text(Gio.File.get_path(dialog.get_file()))
         dialog.destroy()
 
     def on_default_clicked(self, widget):
