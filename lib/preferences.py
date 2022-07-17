@@ -49,16 +49,6 @@ class Preferences(Gtk.Window):
             open(join(Utils.CONFIG_DIR, "otp.json"), "r").read()
         )
 
-        # Default mode label and combo box
-        mode_label = Gtk.Label(halign=Gtk.Align.START)
-        mode_label.set_markup("<b>Default Mode</b>")
-        self.mode = Gtk.ComboBoxText()
-        self.mode.set_entry_text_column(0)
-        modes = ["standard", "simple"]
-        for mode in modes:
-            self.mode.append_text(mode)
-        self.mode.set_active(modes.index(self.config["mode"]))
-
         # Default directory label, button, and entry box
         dflt_label = Gtk.Label(halign=Gtk.Align.START)
         dflt_label.set_markup("<b>Default Directory</b>")
@@ -203,7 +193,6 @@ class Preferences(Gtk.Window):
         """
         Reset options to default
         """
-        self.mode.set_active(0)
         self.dflt.set_text(expanduser("~"))
         self.keys.set_text(join(Utils.DATA_DIR, "keys"))
         self.save.set_text("")
@@ -227,7 +216,6 @@ class Preferences(Gtk.Window):
             raise FileNotFoundError
         with open(join(Utils.CONFIG_DIR, "otp.json"), "w") as c:
             config = {
-                "mode": self.mode.get_active_text(),
                 "dflt": self.dflt.get_text(),
                 "keys": self.keys.get_text(),
                 "save": self.save.get_text(),
