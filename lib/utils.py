@@ -29,7 +29,6 @@ class Utils:
         DATA_DIR = join(GLib.get_user_data_dir(), NAME)
 
     DEFAULT = {
-        "mode": "standard",
         "dflt": expanduser("~"),
         "keys": join(DATA_DIR, "keys"),
         "save": "",
