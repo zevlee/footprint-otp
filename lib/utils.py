@@ -32,6 +32,7 @@ class Utils:
         "dflt": expanduser("~"),
         "keys": join(DATA_DIR, "keys"),
         "save": "",
+        "appr": True,
         "dbug": False
     }
 

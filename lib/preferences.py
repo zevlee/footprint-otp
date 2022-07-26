@@ -6,7 +6,7 @@ from platform import system
 from json import loads, dumps
 from gi import require_versions
 require_versions({"Gtk": "4.0", "Adw": "1"})
-from gi.repository import Gtk, Gio
+from gi.repository import Gtk, Gio, Adw
 
 
 class Preferences(Gtk.Window):
@@ -84,6 +84,10 @@ class Preferences(Gtk.Window):
         advanced_label = Gtk.Label(halign=Gtk.Align.START)
         advanced_label.set_markup("<b>Advanced</b>")
 
+        # Appearance check button
+        self.appr = Gtk.CheckButton(label="Dark Mode")
+        self.appr.set_active(self.config["appr"])
+
         # Debug mode check box
         self.dbug = Gtk.CheckButton(label="Debug Mode")
         self.dbug.set_active(self.config["dbug"])
@@ -108,6 +112,7 @@ class Preferences(Gtk.Window):
             [self.save],
             [note],
             [advanced_label],
+            [self.appr],
             [self.dbug],
             [default_button],
             [cancel_button, save_button]
@@ -215,6 +220,7 @@ class Preferences(Gtk.Window):
         """
         Save preferences then close
         """
+        # Save preferences
         if not exists(self.dflt.get_text()):
             raise FileNotFoundError
         if not exists(self.keys.get_text()):
@@ -226,10 +232,21 @@ class Preferences(Gtk.Window):
                 "dflt": self.dflt.get_text(),
                 "keys": self.keys.get_text(),
                 "save": self.save.get_text(),
+                "appr": self.appr.get_active(),
                 "dbug": self.dbug.get_active()
             }
             c.write(dumps(config))
             c.close()
+        # Set color scheme
+        application = self.get_transient_for().get_application()
+        if self.appr.get_active():
+            application.get_style_manager().set_color_scheme(
+                Adw.ColorScheme.FORCE_DARK
+            )
+        else:
+            application.get_style_manager().set_color_scheme(
+                Adw.ColorScheme.FORCE_LIGHT
+            )
         self.destroy()
 
     def on_save_clicked(self, widget):
