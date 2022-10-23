@@ -10,8 +10,16 @@ from gi.repository import Gtk, Gio, Adw
 
 
 class Preferences(Gtk.Window):
-
+    """
+    Preferences window
+    
+    :param parent: Parent window
+    :type parent: Gtk.Window
+    """
     def __init__(self, parent):
+        """
+        Constructor
+        """
         super().__init__(
             modal=True,
             transient_for=parent,
@@ -125,9 +133,12 @@ class Preferences(Gtk.Window):
         # Add grid
         self.set_child(grid)
 
-    def on_dflt_clicked(self, widget):
+    def on_dflt_clicked(self, button):
         """
         Open a dialog for user to select directory
+        
+        :param button: Button
+        :type button: Gtk.Button
         """
         dialog = Gtk.FileChooserDialog(
             title="Choose the default directory",
@@ -146,9 +157,12 @@ class Preferences(Gtk.Window):
         dialog.connect("response", self._select_dir)
         dialog.show()
 
-    def on_keys_clicked(self, widget):
+    def on_keys_clicked(self, button):
         """
         Open a dialog for user to select directory
+        
+        :param button: Button
+        :type button: Gtk.Button
         """
         dialog = Gtk.FileChooserDialog(
             title="Choose where to save key files",
@@ -167,9 +181,12 @@ class Preferences(Gtk.Window):
         dialog.connect("response", self._select_dir)
         dialog.show()
 
-    def on_enc_clicked(self, widget):
+    def on_enc_clicked(self, button):
         """
         Open a dialog for user to select directory
+        
+        :param button: Button
+        :type button: Gtk.Button
         """
         dialog = Gtk.FileChooserDialog(
             title="Choose the default location to save files",
@@ -195,24 +212,35 @@ class Preferences(Gtk.Window):
 
     def _select_dir(self, dialog, response):
         """
-        Set file when chosen in dialog
+        Set directory when chosen in dialog
+        
+        :param dialog: Dialog
+        :type dialog: Gtk.Dialog
+        :param response: Response from user
+        :type response: int
         """
         if response == Gtk.ResponseType.OK:
             dialog.text_box.set_text(Gio.File.get_path(dialog.get_file()))
         dialog.destroy()
 
-    def on_default_clicked(self, widget):
+    def on_default_clicked(self, button):
         """
         Reset options to default
+        
+        :param button: Button
+        :type button: Gtk.Button
         """
         self.dflt.set_text(expanduser("~"))
         self.keys.set_text(join(Utils.DATA_DIR, "keys"))
         self.save.set_text("")
         self.dbug.set_active(False)
 
-    def on_cancel_clicked(self, widget):
+    def on_cancel_clicked(self, button):
         """
         Close without saving
+        
+        :param button: Button
+        :type button: Gtk.Button
         """
         self.destroy()
 
@@ -249,9 +277,12 @@ class Preferences(Gtk.Window):
             )
         self.destroy()
 
-    def on_save_clicked(self, widget):
+    def on_save_clicked(self, button):
         """
         When clicked, call `_save_prefs`
+        
+        :param button: Button
+        :type button: Gtk.Button
         """
         config = loads(open(join(Utils.CONFIG_DIR, "otp.json"), "r").read())
         if not config["dbug"]:
@@ -274,5 +305,10 @@ class Preferences(Gtk.Window):
     def _confirm(self, dialog, response):
         """
         Close upon confirming
+        
+        :param dialog: Dialog
+        :type dialog: Gtk.Dialog
+        :param response: Response from user
+        :type response: int
         """
         dialog.destroy()

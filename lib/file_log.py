@@ -10,8 +10,16 @@ from gi.repository import Gtk
 
 
 class FileLog(Gtk.Window):
-
+    """
+    File log window
+    
+    :param parent: Parent window
+    :type parent: Gtk.Window
+    """
     def __init__(self, parent):
+        """
+        Constructor
+        """
         super().__init__(
             modal=True,
             transient_for=parent,
@@ -96,14 +104,17 @@ class FileLog(Gtk.Window):
 
     def on_selection(self, widget):
         selection = self.tree.get_selection()
-        model, treeiter = selection.get_selected()
+        _, treeiter = selection.get_selected()
         self.name, self.file, self.key, self.time = [
             item.replace("\n", "") for item in self.store[treeiter][:]
         ]
 
-    def on_delete_clicked(self, widget):
+    def on_delete_clicked(self, button):
         """
         Open dialog to confirm deletion of entry and key file
+        
+        :param button: Delete button
+        :type button: Gtk.Button
         """
         if self.file is not None:
             dialog = Gtk.MessageDialog(
@@ -137,9 +148,12 @@ class FileLog(Gtk.Window):
             dialog.connect("response", self._confirm)
             dialog.show()
 
-    def on_select_clicked(self, widget):
+    def on_select_clicked(self, button):
         """
-        Select files for decryption
+        Select file for decryption
+        
+        :param button: Select file button
+        :type button: Gtk.Button
         """
         if self.file is not None:
             log = open(join(Utils.DATA_DIR, "otp.log"), "r").readlines()
@@ -156,6 +170,11 @@ class FileLog(Gtk.Window):
     def _confirm(self, dialog, response):
         """
         Close upon confirming
+        
+        :param dialog: Dialog
+        :type dialog: Gtk.Dialog
+        :param response: Response from user
+        :type response: int
         """
         if response == Gtk.ResponseType.OK:
             old_log = open(

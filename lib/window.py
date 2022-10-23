@@ -15,8 +15,16 @@ from gi.repository import Gtk, Gio
 
 
 class Window(Gtk.ApplicationWindow):
-
+    """
+    Main window
+    
+    :param app: Application
+    :type app: Gtk.Application
+    """
     def __init__(self, app):
+        """
+        Constructor
+        """
         super().__init__(
             application=app,
             resizable=True,
@@ -101,7 +109,12 @@ class Window(Gtk.ApplicationWindow):
 
     def on_prefs_clicked(self, action, param):
         """
-        Open preferences dialog
+        Open preferences window
+        
+        :param action: Action
+        :type action: Gio.SimpleAction
+        :param param: Parameter
+        :type param: NoneType
         """
         prefs = Preferences(self)
         prefs.connect("destroy", self.reset)
@@ -109,14 +122,24 @@ class Window(Gtk.ApplicationWindow):
 
     def on_log_clicked(self, action, param):
         """
-        Open file log dialog
+        Open log window
+        
+        :param action: Action
+        :type action: Gio.SimpleAction
+        :param param: Parameter
+        :type param: NoneType
         """
         win = FileLog(self)
         win.show()
 
     def on_about_clicked(self, action, param):
         """
-        Open about dialog
+        Open about dialog window
+        
+        :param action: Action
+        :type action: Gio.SimpleAction
+        :param param: Parameter
+        :type param: NoneType
         """
         about = About(self)
         about.show()
@@ -124,6 +147,9 @@ class Window(Gtk.ApplicationWindow):
     def reset(self, widget=None):
         """
         Reset options
+        
+        :param widget: Widget
+        :type widget: Gtk.Widget
         """
         config = loads(open(join(Utils.CONFIG_DIR, "otp.json"), "r").read())
 

@@ -11,8 +11,16 @@ from gi.repository import Gtk, Gio
 
 
 class Encrypt(Gtk.Box):
-
+    """
+    Encryption mode
+    
+    :param window: Window
+    :type window: Gtk.Window
+    """
     def __init__(self, window):
+        """
+        Constructor
+        """
         super().__init__()
 
         self.win = window
@@ -82,9 +90,12 @@ class Encrypt(Gtk.Box):
         # Add grid
         self.append(grid)
 
-    def on_file_clicked(self, widget):
+    def on_file_clicked(self, button):
         """
         Open a dialog for user to select file
+        
+        :param button: Select file button
+        :type button: Gtk.Button
         """
         dialog = Gtk.FileChooserDialog(
             title="Choose the file to encrypt",
@@ -105,6 +116,11 @@ class Encrypt(Gtk.Box):
     def _select_file(self, dialog, response):
         """
         Set file when chosen in dialog
+        
+        :param dialog: File chooser dialog
+        :type dialog: Gtk.FileChooserDialog
+        :param response: Response from user
+        :type response: int
         """
         if response == Gtk.ResponseType.OK:
             filename = Gio.File.get_path(dialog.get_file())
@@ -113,9 +129,12 @@ class Encrypt(Gtk.Box):
                 self.dir.set_text(dirname(filename))
         dialog.destroy()
 
-    def on_dir_clicked(self, widget):
+    def on_dir_clicked(self, button):
         """
         Open a dialog for user to select directory
+        
+        :param button: Select directory button
+        :type button: Gtk.Button
         """
         dialog = Gtk.FileChooserDialog(
             title="Choose the save location",
@@ -144,13 +163,21 @@ class Encrypt(Gtk.Box):
 
     def _select_dir(self, dialog, response):
         """
-        Set file when chosen in dialog
+        Set directory when chosen in dialog
+
+        :param dialog: File chooser dialog
+        :type dialog: Gtk.FileChooserDialog
+        :param response: Response from user
+        :type response: int
         """
         if response == Gtk.ResponseType.OK:
             self.dir.set_text(Gio.File.get_path(dialog.get_file()))
         dialog.destroy()
 
     def _encrypt_file(self):
+        """
+        Encrypt the file
+        """
         file = self.file.get_text()
         if self.dir.get_text() != "":
             dir = self.dir.get_text()
@@ -194,10 +221,13 @@ class Encrypt(Gtk.Box):
         dialog.connect("response", self._confirm)
         dialog.show()
 
-    def on_encrypt_clicked(self, widget):
+    def on_encrypt_clicked(self, button):
         """
         Encrypt the user-selected file and save to the user-selected
         directory
+        
+        :param button: Encrypt button
+        :type button: Gtk.Button
         """
         config = loads(open(join(Utils.CONFIG_DIR, "otp.json"), "r").read())
         if not config["dbug"]:
@@ -223,6 +253,11 @@ class Encrypt(Gtk.Box):
     def _confirm(self, dialog, response):
         """
         Close upon confirming
+        
+        :param dialog: Dialog
+        :type dialog: Gtk.Dialog
+        :param response: Response from user
+        :type response: int
         """
         if response == Gtk.ResponseType.OK:
             dialog.destroy()
