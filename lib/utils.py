@@ -37,17 +37,29 @@ class Utils:
     }
 
     @staticmethod
-    def bn(name):
+    def bn(filename):
         """
-        Normalize a file path then find the base name
+        Normalize a file path then find the base filename
+
+        :param filename: Filename
+        :type filename: str
+        :return: Base filename
+        :rtype: str
         """
-        return basename(normpath(name))
+        return basename(normpath(filename))
 
     @staticmethod
     def lnbr(text, char=70):
         """
         Given a string `text` and integer `char`, return a string with
         line breaks every `char` characters
+        
+        :param text: Text
+        :type text: str
+        :param char: Number of characters
+        :type char: int
+        :return: Text with line breaks
+        :rtype: str
         """
         t = TextWrapper(width=char, break_on_hyphens=False)
         return t.fill(text)

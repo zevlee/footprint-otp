@@ -14,17 +14,35 @@ class OneTimePad:
     @staticmethod
     def xor(message, key):
         """
-        Given bytes inputs `message` and `key`, return the xor of the two
+        Given bytes inputs `message` and `key`, return the bitwise XOR of the two
+        
+        :param message: Message
+        :type message: bytes
+        :param key: Key
+        :type key: bytes
+        :return: Bitwise XOR of message and key
+        :rtype: bytes
         """
         return bytes(m ^ k for m, k in zip(message, key))
 
     @staticmethod
-    def encrypt_filename(file, enc_names=False, file_dir="", keys_dir=""):
+    def encrypt_filename(filename, enc_names=False, file_dir="", keys_dir=""):
         """
-        Given a file as a string input, return an OTP-encoded file and
+        Given a filename as a string input, return an OTP-encoded file and
         corresponding key as file names
+        
+        :param filename: Filename
+        :type filename: str
+        :param enc_names: Encrypt filenames option
+        :type enc_names: bool
+        :param file_dir: File directory
+        :type file_dir: str
+        :param keys_dir: Keys directory
+        :type keys_dir: str
+        :return: Tuple of encrypted filename and key filename
+        :rtype: tuple
         """
-        name = Utils.bn(file)
+        name = Utils.bn(filename)
         key = token_bytes(len(name.encode()))
         if enc_names:
             encrypted = urlsafe_b64encode(
@@ -37,28 +55,37 @@ class OneTimePad:
         return enc_file, key_file
 
     @staticmethod
-    def decrypt_filename(file, key_file, file_dir=""):
+    def decrypt_filename(filename, key_file, file_dir=""):
         """
         Given a string file and corresponding key, return the decrypted
         file name
+        
+        :param filename: Filename
+        :type filename: str
+        :param key_file: Key filename
+        :type key_file: str
+        :param file_dir: File directory
+        :type file_dir: str
+        :return: Decrypted file name
+        :rtype: str
         """
-        if Utils.bn(file)[-4:] == ".otp":
-            filename = Utils.bn(file)[:-4].encode()
+        if Utils.bn(filename)[-4:] == ".otp":
+            dec_file = Utils.bn(filename)[:-4].encode()
         else:
-            filename = Utils.bn(file).encode()
+            dec_file = Utils.bn(filename).encode()
         key = urlsafe_b64decode(Utils.bn(key_file[:-4]).encode())
         try:
             dec_file = OneTimePad.xor(
-                urlsafe_b64decode(filename), key
+                urlsafe_b64decode(dec_file), key
             ).decode()
         except BinasciiError:
-            dec_file = filename.decode()
+            dec_file = dec_file.decode()
         dec_file = join(file_dir, dec_file)
         return dec_file
 
     @staticmethod
     def encrypt_file(
-        file,
+        filename,
         file_dir="",
         keys_dir="",
         log_dir="",
@@ -66,14 +93,29 @@ class OneTimePad:
         del_toggle=False
     ):
         """
-        Given a file, writes the encrypted message and corresponding key to
+        Given a filename, writes the encrypted message and corresponding key to
         separate files
+        
+        :param filename: Filename
+        :type filename: str
+        :param file_dir: File directory
+        :type file_dir: str
+        :param keys_dir: Keys directory
+        :type keys_dir: str
+        :param log_dir: Log directory
+        :type log_dir: str
+        :param enc_names: Encrypt filenames option
+        :type enc_names: bool
+        :param del_toggle: Delete files option
+        :type del_toggle: bool
+        :return: Tuple of encrypted filename and key filename
+        :rtype: tuple
         """
-        msg = open(file, "rb").read()
+        msg = open(filename, "rb").read()
         key = token_bytes(len(msg))
         encrypted = OneTimePad.xor(msg, key)
         enc_file, key_file = OneTimePad.encrypt_filename(
-            file, enc_names, file_dir, keys_dir
+            filename, enc_names, file_dir, keys_dir
         )
 
         # Write to files
@@ -83,7 +125,7 @@ class OneTimePad:
         with open(key_file, "wb") as k:
             k.write(key)
             k.close()
-        log = f"{file}\n{enc_file}\n{key_file}\n{ctime(time())}\n\n"
+        log = f"{filename}\n{enc_file}\n{key_file}\n{ctime(time())}\n\n"
         log_file = join(log_dir, "otp.log")
         try:
             with open(log_file, "a") as logfile:
@@ -94,12 +136,12 @@ class OneTimePad:
                 logfile.write(log)
                 logfile.close()
         if del_toggle:
-            remove(file)
+            remove(filename)
         return enc_file, key_file
 
     @staticmethod
     def decrypt_file(
-        file,
+        filename,
         key_file,
         file_dir="",
         log_dir="",
@@ -108,20 +150,33 @@ class OneTimePad:
         """
         Given a file and key file, reads the encrypted message from file using
         the key from key_file
+        
+        :param filename: Filename
+        :type filename: str
+        :param key_file: Key filename
+        :type key_file: str
+        :param file_dir: File directory
+        :type file_dir: str
+        :param log_dir: Log directory
+        :type log_dir: str
+        :param del_toggle: Delete files option
+        :type del_toggle: bool
+        :return: Decrypted filename
+        :rtype: str
         """
-        msg = open(file, "rb").read()
+        msg = open(filename, "rb").read()
         key = open(key_file, "rb").read()
         decrypted = OneTimePad.xor(msg, key)
-        dec_file = OneTimePad.decrypt_filename(file, key_file, file_dir)
+        dec_file = OneTimePad.decrypt_filename(filename, key_file, file_dir)
         if del_toggle:
-            remove(file)
+            remove(filename)
             remove(key_file)
             try:
                 log_file = join(log_dir, "otp.log")
                 old_log = open(log_file, "r").readlines()
                 files = [Utils.bn(line[:-1]) for line in old_log]
-                # Find the index of the file name
-                ind = files.index(Utils.bn(file)) - 1
+                # Find the index of the filename
+                ind = files.index(Utils.bn(filename)) - 1
                 # Designate the indices of the lines to be removed i.e. the
                 # file and the four lines immediately following it
                 rmv = []

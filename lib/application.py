@@ -12,7 +12,13 @@ from gi.repository import Gtk, Gdk, Gio, GLib, Adw
 
 
 class Application(Adw.Application):
+    """
+    Application
+    """
     def __init__(self):
+        """
+        Constructor
+        """
         super().__init__(
             application_id=Utils.ID,
             flags=Gio.ApplicationFlags.FLAGS_NONE
@@ -25,6 +31,9 @@ class Application(Adw.Application):
         GLib.set_prgname(Utils.ID)
 
     def do_startup(self):
+        """
+        Start up application
+        """
         Gtk.Application.do_startup(self)
 
         # Restore any missing files and folders
@@ -63,5 +72,8 @@ class Application(Adw.Application):
             )
 
     def do_activate(self):
+        """
+        Activate application
+        """
         win = Window(self)
         win.show()

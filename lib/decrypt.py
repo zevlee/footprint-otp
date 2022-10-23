@@ -11,8 +11,16 @@ from gi.repository import Gtk, Gio
 
 
 class Decrypt(Gtk.Box):
-
+    """
+    Decryption mode
+    
+    :param window: Window
+    :type window: Gtk.Window
+    """
     def __init__(self, window):
+        """
+        Constructor
+        """
         super().__init__()
 
         self.win = window
@@ -85,16 +93,21 @@ class Decrypt(Gtk.Box):
         # Add grid
         self.append(grid)
 
-    def filter(self, dialog, type):
+    def _filter(self, dialog, filetype):
         """
         Filter for the file selection dialog
+        
+        :param dialog: File selection dialog
+        :type dialog: Gtk.FileChooserDialog
+        :param filetype: Type of file to filter for, either "e" or "k" 
+        :type filetype: str
         """
-        if type == "e":
+        if filetype == "e":
             filter_enc = Gtk.FileFilter()
             filter_enc.set_name("OTP encrypted files (.otp)")
             filter_enc.add_pattern("*.otp")
             dialog.add_filter(filter_enc)
-        elif type == "k":
+        elif filetype == "k":
             filter_key = Gtk.FileFilter()
             filter_key.set_name("OTP keys (.key)")
             filter_key.add_pattern("*.key")
@@ -104,9 +117,12 @@ class Decrypt(Gtk.Box):
         filter_all.add_pattern("*")
         dialog.add_filter(filter_all)
 
-    def on_file_clicked(self, widget):
+    def on_file_clicked(self, button):
         """
         Open a dialog for user to select file
+        
+        :param button: Select file button
+        :type button: Gtk.Button
         """
         dialog = Gtk.FileChooserDialog(
             title="Choose the file to decrypt",
@@ -121,13 +137,18 @@ class Decrypt(Gtk.Box):
         dialog.set_current_folder(
             Gio.File.new_for_path(self.config["dflt"])
         )
-        self.filter(dialog, "e")
+        self._filter(dialog, "e")
         dialog.connect("response", self._select_file)
         dialog.show()
 
     def _select_file(self, dialog, response):
         """
         Set file when chosen in dialog
+        
+        :param dialog: File chooser dialog
+        :type dialog: Gtk.FileChooserDialog
+        :param response: Response from user
+        :type response: int
         """
         if response == Gtk.ResponseType.OK:
             filename = Gio.File.get_path(dialog.get_file())
@@ -150,9 +171,12 @@ class Decrypt(Gtk.Box):
                 self.dir.set_text(dirname(filename))
         dialog.destroy()
 
-    def on_key_clicked(self, widget):
+    def on_key_clicked(self, button):
         """
         Open a dialog for user to select key
+        
+        :param button: Select key button
+        :type button: Gtk.Button
         """
         dialog = Gtk.FileChooserDialog(
             title="Choose the key file",
@@ -167,21 +191,29 @@ class Decrypt(Gtk.Box):
         dialog.set_current_folder(
             Gio.File.new_for_path(self.config["keys"])
         )
-        self.filter(dialog, "k")
+        self._filter(dialog, "k")
         dialog.connect("response", self._select_key)
         dialog.show()
 
     def _select_key(self, dialog, response):
         """
         Set key file when chosen in dialog
+        
+        :param dialog: File chooser dialog
+        :type dialog: Gtk.FileChooserDialog
+        :param response: Response from user
+        :type response: int
         """
         if response == Gtk.ResponseType.OK:
             self.key.set_text(Gio.File.get_path(dialog.get_file()))
         dialog.destroy()
 
-    def on_dir_clicked(self, widget):
+    def on_dir_clicked(self, button):
         """
         Open a dialog for user to select directory
+        
+        :param button: Select directory button
+        :type button: Gtk.Button
         """
         dialog = Gtk.FileChooserDialog(
             title="Choose the save location",
@@ -210,27 +242,35 @@ class Decrypt(Gtk.Box):
 
     def _select_dir(self, dialog, response):
         """
-        Set file when chosen in dialog
+        Set directory when chosen in dialog
+        
+        :param dialog: File chooser dialog
+        :type dialog: Gtk.FileChooserDialog
+        :param response: Response from user
+        :type response: int
         """
         if response == Gtk.ResponseType.OK:
             self.dir.set_text(Gio.File.get_path(dialog.get_file()))
         dialog.destroy()
 
     def _decrypt_file(self):
+        """
+        Decrypt the file
+        """
         file = self.file.get_text()
         key = self.key.get_text()
         if self.dir.get_text() != "":
-            dir = self.dir.get_text()
+            outdir = self.dir.get_text()
         elif self.config["save"] != "":
-            dir = self.config["save"]
+            outdir = self.config["save"]
         else:
-            dir = dirname(file)
+            outdir = dirname(file)
         del_toggle = self.del_toggle.get_active()
         start = time()
         d = OneTimePad.decrypt_file(
             file,
             key,
-            dir,
+            outdir,
             Utils.DATA_DIR,
             del_toggle
         )
@@ -257,10 +297,13 @@ class Decrypt(Gtk.Box):
         dialog.connect("response", self._confirm)
         dialog.show()
 
-    def on_decrypt_clicked(self, widget):
+    def on_decrypt_clicked(self, button):
         """
         Decrypt the user-selected file and save to the user-selected
         directory
+        
+        :param button: Decrypt button
+        :type button: Gtk.Button
         """
         config = loads(open(join(Utils.CONFIG_DIR, "otp.json"), "r").read())
         if not config["dbug"]:
@@ -286,6 +329,11 @@ class Decrypt(Gtk.Box):
     def _confirm(self, dialog, response):
         """
         Close upon confirming
+        
+        :param dialog: Dialog
+        :type dialog: Gtk.Dialog
+        :param response: Response from user
+        :type response: int
         """
         if response == Gtk.ResponseType.OK:
             dialog.destroy()
