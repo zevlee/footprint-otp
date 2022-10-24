@@ -49,6 +49,10 @@ class Application(Adw.Application):
                 d.close()
         if not exists(join(Utils.DATA_DIR, "otp.log")):
             open(join(Utils.DATA_DIR, "otp.log"), "w").close()
+        
+        # Validate config files
+        Utils.validate_config("default.json")
+        Utils.validate_config("settings.json", "default.json")
 
         # Set color scheme
         config = loads(open(join(Utils.CONFIG_DIR, "otp.json"), "r").read())
