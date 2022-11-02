@@ -1,5 +1,7 @@
 # Footprint OTP
-Footprint OTP is a simple encryption program that uses the [one-time pad](https://en.wikipedia.org/wiki/One-time_pad) technique. It uses the Python [secrets](https://docs.python.org/3/library/secrets.html) module for key generation.
+Footprint OTP is an encryption program that uses a simple stream cipher. It uses the Python [secrets](https://docs.python.org/3/library/secrets.html) module for key generation.
+
+Work is currently being done to implement a hardware random number generator for key generation in order to use truly random bytes.
 
 ### Signing Key
 [Download my signing key here.](https://zevlee.me/sign.txt)
