@@ -1,4 +1,7 @@
 # Footprint OTP
+
+**Warning! This project is a toy intended as a tool for myself to learn about cryptography. DO NOT USE IT IN PRODUCTION!**
+
 Footprint OTP is an encryption program that uses a simple stream cipher. It uses the Python [secrets](https://docs.python.org/3/library/secrets.html) module for key generation.
 
 Work is currently being done to implement a hardware random number generator for key generation in order to use truly random bytes.
