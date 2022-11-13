@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 from lib.utils import Utils
-from lib.otp import OneTimePad
+from lib.stream_cipher import StreamCipher
 from os.path import dirname, join, exists
 from json import loads
 from time import time, strftime, gmtime
@@ -188,7 +188,7 @@ class Encrypt(Gtk.Box):
         enc_toggle = self.enc_toggle.get_active()
         del_toggle = self.del_toggle.get_active()
         start = time()
-        e, k = OneTimePad.encrypt_file(
+        e, k = StreamCipher.encrypt_file(
             file,
             dir,
             self.config["keys"],

@@ -9,7 +9,7 @@ from time import time, ctime
 from binascii import Error as BinasciiError
 
 
-class OneTimePad:
+class StreamCipher:
 
     @staticmethod
     def xor(message, key):
@@ -46,7 +46,7 @@ class OneTimePad:
         key = token_bytes(len(name.encode()))
         if enc_names:
             encrypted = urlsafe_b64encode(
-                OneTimePad.xor(name.encode(), key)
+                StreamCipher.xor(name.encode(), key)
             ).decode()
             enc_file = f"{join(file_dir, encrypted)}.otp"
         else:
@@ -75,7 +75,7 @@ class OneTimePad:
             dec_file = Utils.bn(filename).encode()
         key = urlsafe_b64decode(Utils.bn(key_file[:-4]).encode())
         try:
-            dec_file = OneTimePad.xor(
+            dec_file = StreamCipher.xor(
                 urlsafe_b64decode(dec_file), key
             ).decode()
         except BinasciiError:
@@ -113,8 +113,8 @@ class OneTimePad:
         """
         msg = open(filename, "rb").read()
         key = token_bytes(len(msg))
-        encrypted = OneTimePad.xor(msg, key)
-        enc_file, key_file = OneTimePad.encrypt_filename(
+        encrypted = StreamCipher.xor(msg, key)
+        enc_file, key_file = StreamCipher.encrypt_filename(
             filename, enc_names, file_dir, keys_dir
         )
 
@@ -166,8 +166,8 @@ class OneTimePad:
         """
         msg = open(filename, "rb").read()
         key = open(key_file, "rb").read()
-        decrypted = OneTimePad.xor(msg, key)
-        dec_file = OneTimePad.decrypt_filename(filename, key_file, file_dir)
+        decrypted = StreamCipher.xor(msg, key)
+        dec_file = StreamCipher.decrypt_filename(filename, key_file, file_dir)
         if del_toggle:
             remove(filename)
             remove(key_file)
