@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 from lib.utils import Utils
-from lib.otp import OneTimePad
+from lib.stream_cipher import StreamCipher
 from os.path import dirname, join, exists
 from json import loads
 from time import time, strftime, gmtime
@@ -267,7 +267,7 @@ class Decrypt(Gtk.Box):
             outdir = dirname(file)
         del_toggle = self.del_toggle.get_active()
         start = time()
-        d = OneTimePad.decrypt_file(
+        d = StreamCipher.decrypt_file(
             file,
             key,
             outdir,
