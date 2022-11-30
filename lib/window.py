@@ -151,7 +151,7 @@ class Window(Gtk.ApplicationWindow):
         :param widget: Widget
         :type widget: Gtk.Widget
         """
-        config = loads(open(join(Utils.CONFIG_DIR, "otp.json"), "r").read())
+        config = loads(open(join(Utils.CONFIG_DIR, "settings.json"), "r").read())
 
         # Reset encrypt options
         self.encrypt.file.set_text("")

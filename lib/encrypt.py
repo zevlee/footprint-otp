@@ -27,7 +27,7 @@ class Encrypt(Gtk.Box):
 
         # Open stored preferences
         self.config = loads(
-            open(join(Utils.CONFIG_DIR, "otp.json"), "r").read()
+            open(join(Utils.CONFIG_DIR, "settings.json"), "r").read()
         )
 
         # Set up grid
@@ -44,6 +44,13 @@ class Encrypt(Gtk.Box):
         file_button = Gtk.Button(label="Choose File")
         file_button.connect("clicked", self.on_file_clicked)
         self.file = Gtk.Entry()
+        
+        # # Key label, button, and entry box
+        # key_label = Gtk.Label(halign=Gtk.Align.START)
+        # key_label.set_markup("<b>Choose the key file</b>")
+        # key_button = Gtk.Button(label="Choose Key File")
+        # key_button.connect("clicked", self.on_key_clicked)
+        # self.key = Gtk.Entry()
 
         # Save location label, button, and entry box
         dir_label = Gtk.Label(halign=Gtk.Align.START)
@@ -51,10 +58,6 @@ class Encrypt(Gtk.Box):
         dir_button = Gtk.Button(label="Choose Directory")
         dir_button.connect("clicked", self.on_dir_clicked)
         self.dir = Gtk.Entry(text=self.config["save"])
-
-        # Encrypt file names option
-        self.enc_toggle = Gtk.CheckButton(label="Encrypt file names")
-        self.enc_toggle.set_active(True)
 
         # Delete file upon encryption option
         self.del_toggle = Gtk.CheckButton(label="Delete file upon encryption")
@@ -74,11 +77,11 @@ class Encrypt(Gtk.Box):
         widgets = [
             [file_label, file_button],
             [self.file],
+            # [key_label, key_button],
+            # [self.key],
             [dir_label, dir_button],
             [self.dir],
-            [self.enc_toggle],
             [self.del_toggle],
-            [Gtk.Box()],
             [reset_button],
             [encrypt_button]
         ]
@@ -127,6 +130,42 @@ class Encrypt(Gtk.Box):
             self.file.set_text(filename)
             if self.dir.get_text() == "":
                 self.dir.set_text(dirname(filename))
+        dialog.destroy()
+
+    def on_key_clicked(self, button):
+        """
+        Open a dialog for user to select key
+        
+        :param button: Select key button
+        :type button: Gtk.Button
+        """
+        dialog = Gtk.FileChooserDialog(
+            title="Choose the key file",
+            transient_for=self.win,
+            modal=True,
+            action=Gtk.FileChooserAction.OPEN
+        )
+        dialog.add_buttons(
+            "_Cancel", Gtk.ResponseType.CANCEL,
+            "_Open", Gtk.ResponseType.OK,
+        )
+        dialog.set_current_folder(
+            Gio.File.new_for_path(self.config["keys"])
+        )
+        dialog.connect("response", self._select_key)
+        dialog.show()
+
+    def _select_key(self, dialog, response):
+        """
+        Set key file when chosen in dialog
+        
+        :param dialog: File chooser dialog
+        :type dialog: Gtk.FileChooserDialog
+        :param response: Response from user
+        :type response: int
+        """
+        if response == Gtk.ResponseType.OK:
+            self.key.set_text(Gio.File.get_path(dialog.get_file()))
         dialog.destroy()
 
     def on_dir_clicked(self, button):
@@ -180,20 +219,19 @@ class Encrypt(Gtk.Box):
         """
         file = self.file.get_text()
         if self.dir.get_text() != "":
-            dir = self.dir.get_text()
+            dirname = self.dir.get_text()
         elif self.config["save"] != "":
-            dir = self.config["save"]
+            dirname = self.config["save"]
         else:
-            dir = dirname(file)
-        enc_toggle = self.enc_toggle.get_active()
+            dirname = dirname(file)
         del_toggle = self.del_toggle.get_active()
         start = time()
         e, k = StreamCipher.encrypt_file(
             file,
-            dir,
+            dirname,
             self.config["keys"],
             Utils.DATA_DIR,
-            enc_toggle,
+            self.config["encf"],
             del_toggle
         )
         elapsed = time() - start
@@ -229,7 +267,7 @@ class Encrypt(Gtk.Box):
         :param button: Encrypt button
         :type button: Gtk.Button
         """
-        config = loads(open(join(Utils.CONFIG_DIR, "otp.json"), "r").read())
+        config = loads(open(join(Utils.CONFIG_DIR, "settings.json"), "r").read())
         if not config["dbug"]:
             dialog = Gtk.MessageDialog(
                 transient_for=self.win,

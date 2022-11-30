@@ -54,7 +54,7 @@ class Preferences(Gtk.Window):
 
         # Open stored preferences
         self.config = loads(
-            open(join(Utils.CONFIG_DIR, "otp.json"), "r").read()
+            open(join(Utils.CONFIG_DIR, "settings.json"), "r").read()
         )
 
         # Default directory label, button, and entry box
@@ -81,16 +81,13 @@ class Preferences(Gtk.Window):
         self.save = Gtk.Entry()
         self.save.set_text(self.config["save"])
 
-        # Default save directory note
-        note = Gtk.Label(halign=Gtk.Align.START)
-        note.set_markup(Utils.lnbr(
-            "<small>If the save location is left blank, files are saved to the"
-            " same location as the selected file by default.</small>"
-        ))
-
         # Advanced label
         advanced_label = Gtk.Label(halign=Gtk.Align.START)
         advanced_label.set_markup("<b>Advanced</b>")
+
+        # Encrypt file names option
+        self.encf = Gtk.CheckButton(label="Encrypt file names")
+        self.encf.set_active(self.config["encf"])
 
         # Appearance check button
         self.appr = Gtk.CheckButton(label="Dark Mode")
@@ -118,8 +115,8 @@ class Preferences(Gtk.Window):
             [self.keys],
             [save_dir_label, save_dir_button],
             [self.save],
-            [note],
             [advanced_label],
+            [self.encf],
             [self.appr],
             [self.dbug],
             [default_button],
@@ -255,11 +252,12 @@ class Preferences(Gtk.Window):
             raise FileNotFoundError
         if not exists(self.save.get_text()) and self.save.get_text() != "":
             raise FileNotFoundError
-        with open(join(Utils.CONFIG_DIR, "otp.json"), "w") as c:
+        with open(join(Utils.CONFIG_DIR, "settings.json"), "w") as c:
             config = {
                 "dflt": self.dflt.get_text(),
                 "keys": self.keys.get_text(),
                 "save": self.save.get_text(),
+                "encf": self.encf.get_active(),
                 "appr": self.appr.get_active(),
                 "dbug": self.dbug.get_active()
             }
@@ -284,7 +282,7 @@ class Preferences(Gtk.Window):
         :param button: Button
         :type button: Gtk.Button
         """
-        config = loads(open(join(Utils.CONFIG_DIR, "otp.json"), "r").read())
+        config = loads(open(join(Utils.CONFIG_DIR, "settings.json"), "r").read())
         if not config["dbug"]:
             dialog = Gtk.MessageDialog(
                 transient_for=self,

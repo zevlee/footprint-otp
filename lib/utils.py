@@ -35,6 +35,7 @@ class Utils:
         "dflt": expanduser("~"),
         "keys": join(DATA_DIR, "keys"),
         "save": "",
+        "encf": False,
         "appr": True,
         "dbug": False
     }
@@ -85,18 +86,17 @@ class Utils:
         return config
     
     @staticmethod
-    def validate_config(filename, default="RESET"):
+    def validate_config(filename):
         """
         Given a filename `filename`, replace the file with filename `default`
         if it is not valid
         
-        :param filename: Default filename
-        :type filename: str
         :param filename: Config filename
         :type filename: str
+        :param default: Default filename
+        :type default: str
         """
         overwrite = False
-        default_config = Utils.read_config(default)
         config = Utils.read_config(filename)
         # Remove invalid keys
         for key in [k for k in config.keys() if k not in Utils.DEFAULT.keys()]:
@@ -104,12 +104,12 @@ class Utils:
             overwrite = True
         # Add missing keys
         for key in [k for k in Utils.DEFAULT.keys() if k not in config.keys()]:
-            config[key] = default_config[key]
+            config[key] = Utils.DEFAULT[key]
             overwrite = True
         # Validate config options
-        for k in ["appr", "dbug"]:
+        for k in ["encf", "appr", "dbug"]:
             if not isinstance(config[k], int):
-                config[k] = default_config[k]
+                config[k] = Utils.DEFAULT[k]
                 overwrite = True
         # Overwrite filename if there is an error
         if overwrite:

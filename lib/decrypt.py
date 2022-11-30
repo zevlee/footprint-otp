@@ -27,7 +27,7 @@ class Decrypt(Gtk.Box):
 
         # Open stored preferences
         self.config = loads(
-            open(join(Utils.CONFIG_DIR, "otp.json"), "r").read()
+            open(join(Utils.CONFIG_DIR, "settings.json"), "r").read()
         )
 
         # Set up grid
@@ -93,25 +93,17 @@ class Decrypt(Gtk.Box):
         # Add grid
         self.append(grid)
 
-    def _filter(self, dialog, filetype):
+    def _filter(self, dialog):
         """
         Filter for the file selection dialog
         
         :param dialog: File selection dialog
         :type dialog: Gtk.FileChooserDialog
-        :param filetype: Type of file to filter for, either "e" or "k" 
-        :type filetype: str
         """
-        if filetype == "e":
-            filter_enc = Gtk.FileFilter()
-            filter_enc.set_name("OTP encrypted files (.otp)")
-            filter_enc.add_pattern("*.otp")
-            dialog.add_filter(filter_enc)
-        elif filetype == "k":
-            filter_key = Gtk.FileFilter()
-            filter_key.set_name("OTP keys (.key)")
-            filter_key.add_pattern("*.key")
-            dialog.add_filter(filter_key)
+        filter_enc = Gtk.FileFilter()
+        filter_enc.set_name("OTP encrypted files (.otp)")
+        filter_enc.add_pattern("*.otp")
+        dialog.add_filter(filter_enc)
         filter_all = Gtk.FileFilter()
         filter_all.set_name("All files")
         filter_all.add_pattern("*")
@@ -137,7 +129,7 @@ class Decrypt(Gtk.Box):
         dialog.set_current_folder(
             Gio.File.new_for_path(self.config["dflt"])
         )
-        self._filter(dialog, "e")
+        self._filter(dialog)
         dialog.connect("response", self._select_file)
         dialog.show()
 
@@ -191,7 +183,6 @@ class Decrypt(Gtk.Box):
         dialog.set_current_folder(
             Gio.File.new_for_path(self.config["keys"])
         )
-        self._filter(dialog, "k")
         dialog.connect("response", self._select_key)
         dialog.show()
 
@@ -305,7 +296,7 @@ class Decrypt(Gtk.Box):
         :param button: Decrypt button
         :type button: Gtk.Button
         """
-        config = loads(open(join(Utils.CONFIG_DIR, "otp.json"), "r").read())
+        config = loads(open(join(Utils.CONFIG_DIR, "settings.json"), "r").read())
         if not config["dbug"]:
             dialog = Gtk.MessageDialog(
                 transient_for=self.win,
