@@ -43,19 +43,18 @@ class Application(Adw.Application):
             mkdir(Utils.DATA_DIR)
         if not exists(join(Utils.DATA_DIR, "keys")):
             mkdir(join(Utils.DATA_DIR, "keys"))
-        if not exists(join(Utils.CONFIG_DIR, "otp.json")):
-            with open(join(Utils.CONFIG_DIR, "otp.json"), "w") as d:
+        if not exists(join(Utils.CONFIG_DIR, "settings.json")):
+            with open(join(Utils.CONFIG_DIR, "settings.json"), "w") as d:
                 d.write(dumps(Utils.DEFAULT))
                 d.close()
         if not exists(join(Utils.DATA_DIR, "otp.log")):
             open(join(Utils.DATA_DIR, "otp.log"), "w").close()
         
-        # Validate config files
-        Utils.validate_config("default.json")
-        Utils.validate_config("settings.json", "default.json")
+        # Validate config file
+        Utils.validate_config("settings.json")
 
         # Set color scheme
-        config = loads(open(join(Utils.CONFIG_DIR, "otp.json"), "r").read())
+        config = loads(open(join(Utils.CONFIG_DIR, "settings.json"), "r").read())
         appearance = config["appr"]
         if appearance:
             self.get_style_manager().set_color_scheme(
