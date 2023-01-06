@@ -45,12 +45,12 @@ class Encrypt(Gtk.Box):
         file_button.connect("clicked", self.on_file_clicked)
         self.file = Gtk.Entry()
         
-        # # Key label, button, and entry box
-        # key_label = Gtk.Label(halign=Gtk.Align.START)
-        # key_label.set_markup("<b>Choose the key file</b>")
-        # key_button = Gtk.Button(label="Choose Key File")
-        # key_button.connect("clicked", self.on_key_clicked)
-        # self.key = Gtk.Entry()
+        # Key label, button, and entry box
+        key_label = Gtk.Label(halign=Gtk.Align.START)
+        key_label.set_markup("<b>Choose the key file</b>")
+        key_button = Gtk.Button(label="Choose Key File")
+        key_button.connect("clicked", self.on_key_clicked)
+        self.key = Gtk.Entry()
 
         # Save location label, button, and entry box
         dir_label = Gtk.Label(halign=Gtk.Align.START)
@@ -77,8 +77,8 @@ class Encrypt(Gtk.Box):
         widgets = [
             [file_label, file_button],
             [self.file],
-            # [key_label, key_button],
-            # [self.key],
+            [key_label, key_button],
+            [self.key],
             [dir_label, dir_button],
             [self.dir],
             [self.del_toggle],
@@ -218,6 +218,7 @@ class Encrypt(Gtk.Box):
         Encrypt the file
         """
         file = self.file.get_text()
+        key = self.key.get_text()
         if self.dir.get_text() != "":
             dirname = self.dir.get_text()
         elif self.config["save"] != "":
@@ -228,6 +229,7 @@ class Encrypt(Gtk.Box):
         start = time()
         e, k = StreamCipher.encrypt_file(
             file,
+            key,
             dirname,
             self.config["keys"],
             Utils.DATA_DIR,
