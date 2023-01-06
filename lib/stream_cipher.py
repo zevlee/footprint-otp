@@ -4,7 +4,6 @@ from lib.utils import Utils
 from base64 import urlsafe_b64encode, urlsafe_b64decode
 from os import remove
 from os.path import splitext, exists, join
-from secrets import token_bytes
 from time import time, ctime
 from binascii import Error as BinasciiError
 
@@ -26,13 +25,15 @@ class StreamCipher:
         return bytes(m ^ k for m, k in zip(message, key))
 
     @staticmethod
-    def encrypt_filename(filename, enc_names=False, file_dir="", keys_dir=""):
+    def encrypt_filename(filename, key_file, enc_names=False, file_dir="", keys_dir=""):
         """
         Given a filename as a string input, return an OTP-encoded file and
         corresponding key as file names
         
         :param filename: Filename
         :type filename: str
+        :param key_file: Key filename
+        :type key_file: str
         :param enc_names: Encrypt filenames option
         :type enc_names: bool
         :param file_dir: File directory
@@ -43,15 +44,15 @@ class StreamCipher:
         :rtype: tuple
         """
         name = Utils.bn(filename)
-        key = token_bytes(len(name.encode()))
+        key = Utils.bn(key_file)
         if enc_names:
             encrypted = urlsafe_b64encode(
-                StreamCipher.xor(name.encode(), key)
+                StreamCipher.xor(name.encode(), key.encode())
             ).decode()
             enc_file = f"{join(file_dir, encrypted)}.otp"
         else:
             enc_file = f"{join(file_dir, name)}.otp"
-        key_file = f"{join(keys_dir, urlsafe_b64encode(key).decode())}.key"
+        key_file = join(keys_dir, key)
         return enc_file, key_file
 
     @staticmethod
@@ -73,7 +74,7 @@ class StreamCipher:
             dec_file = Utils.bn(filename)[:-4].encode()
         else:
             dec_file = Utils.bn(filename).encode()
-        key = urlsafe_b64decode(Utils.bn(key_file[:-4]).encode())
+        key = Utils.bn(key_file).encode()
         try:
             dec_file = StreamCipher.xor(
                 urlsafe_b64decode(dec_file), key
@@ -86,6 +87,7 @@ class StreamCipher:
     @staticmethod
     def encrypt_file(
         filename,
+        key_file,
         file_dir="",
         keys_dir="",
         log_dir="",
@@ -98,6 +100,8 @@ class StreamCipher:
         
         :param filename: Filename
         :type filename: str
+        :param key_file: Key filename
+        :type key_file: str
         :param file_dir: File directory
         :type file_dir: str
         :param keys_dir: Keys directory
@@ -112,20 +116,20 @@ class StreamCipher:
         :rtype: tuple
         """
         msg = open(filename, "rb").read()
-        key = token_bytes(len(msg))
+        key = open(key_file, "rb").read()
         encrypted = StreamCipher.xor(msg, key)
-        enc_file, key_file = StreamCipher.encrypt_filename(
-            filename, enc_names, file_dir, keys_dir
+        enc_filename, key_filename = StreamCipher.encrypt_filename(
+            filename, key_file, enc_names, file_dir, keys_dir
         )
 
         # Write to files
-        with open(enc_file, "wb") as e:
+        with open(enc_filename, "wb") as e:
             e.write(encrypted)
             e.close()
-        with open(key_file, "wb") as k:
+        with open(key_filename, "wb") as k:
             k.write(key)
             k.close()
-        log = f"{filename}\n{enc_file}\n{key_file}\n{ctime(time())}\n\n"
+        log = f"{filename}\n{enc_filename}\n{key_filename}\n{ctime(time())}\n\n"
         log_file = join(log_dir, "otp.log")
         try:
             with open(log_file, "a") as logfile:
@@ -137,7 +141,7 @@ class StreamCipher:
                 logfile.close()
         if del_toggle:
             remove(filename)
-        return enc_file, key_file
+        return enc_filename, key_filename
 
     @staticmethod
     def decrypt_file(

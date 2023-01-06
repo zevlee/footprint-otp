@@ -155,8 +155,8 @@ class Window(Gtk.ApplicationWindow):
 
         # Reset encrypt options
         self.encrypt.file.set_text("")
+        self.encrypt.key.set_text("")
         self.encrypt.dir.set_text(config["save"])
-        self.encrypt.enc_toggle.set_active(True)
         self.encrypt.del_toggle.set_active(False)
         self.encrypt.config = config
 
