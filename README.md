@@ -4,9 +4,6 @@
 
 Footprint OTP is an encryption program that uses a simple stream cipher. It performs a bitwise XOR of two user-selected files. When used with truly random bytes for the key, this would be considered to be [one-time pad](https://en.wikipedia.org/wiki/One-time_pad) encryption.
 
-### Signing Key
-[Download my signing key here.](https://zevlee.me/sign.txt)
-
 ### Building on Windows
 1. MSYS2 is needed to build on Windows. [Get it from the MSYS2 website.](https://www.msys2.org/)
 2. Go to your folder for MSYS2 and run ``mingw64.exe``. The following commands will be executed in the console that appears.
