@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-from lib.utils import Utils
-from lib.stream_cipher import StreamCipher
+from .utils import Utils
+from .stream_cipher import StreamCipher
 from os.path import dirname, join, exists
 from json import loads
 from time import time, strftime, gmtime

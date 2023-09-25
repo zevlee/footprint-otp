@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from lib.utils import Utils
+from .utils import Utils
 from base64 import urlsafe_b64encode, urlsafe_b64decode
 from os import remove
 from os.path import splitext, exists, join

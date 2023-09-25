@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-from lib.window import Window
-from lib.utils import Utils
+from .window import Window
+from .utils import Utils
 from os import mkdir
 from os.path import join, exists
 from platform import system
