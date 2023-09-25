@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 
-from lib.about import About
-from lib.preferences import Preferences
-from lib.file_log import FileLog
-from lib.encrypt import Encrypt
-from lib.decrypt import Decrypt
-from lib.utils import Utils
+from .about import About
+from .preferences import Preferences
+from .file_log import FileLog
+from .encrypt import Encrypt
+from .decrypt import Decrypt
+from .utils import Utils
 from os.path import join
 from platform import system
 from json import loads

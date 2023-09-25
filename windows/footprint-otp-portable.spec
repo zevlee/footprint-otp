@@ -3,12 +3,12 @@
 block_cipher = None
 
 a = Analysis(
-	['../footprint-otp'],
+	['../footprintotp.py'],
 	pathex=[],
 	binaries=[],
 	datas=[
 		('../gui', 'gui'),
-		('../lib', 'lib'),
+		('../footprintotp', 'footprintotp'),
 		('../me.zevlee.FootprintOTP.svg', '.'),
 		('../LICENSE', '.'),
 		('../VERSION', '.')
