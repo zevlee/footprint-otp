@@ -1,0 +1,5 @@
+#!/bin/sh
+
+APP=footprint-otp
+NAME="Footprint OTP"
+ICON=me.zevlee.FootprintOTP.svg
