@@ -16,3 +16,8 @@ cd footprint-otp/linux
 ```
 ./build.sh
 ```
+Build Options
+Flag | Description
+:-- | :--
+`-p` | Build a portable binary (Without this flag, builds an AppImage)
+`-h` | Display help dialog
