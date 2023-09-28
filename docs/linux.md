@@ -19,5 +19,5 @@ cd footprint-otp/linux
 Build Options
 Flag | Description
 :-- | :--
-`-p` | Build a portable binary (Without this flag, builds an AppImage)
+`-b` | Build a portable binary (Without this flag, builds an AppImage)
 `-h` | Display help dialog

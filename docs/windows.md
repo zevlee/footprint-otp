@@ -24,5 +24,5 @@ cd footprint-otp/windows
 Build Options
 Flag | Description
 :-- | :--
-`-p` | Build a portable binary (Without this flag, builds an installer)
+`-b` | Build a portable binary (Without this flag, builds an installer)
 `-h` | Display help dialog
