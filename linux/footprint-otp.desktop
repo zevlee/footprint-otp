@@ -6,6 +6,6 @@ Type=Application
 Icon=me.zevlee.FootprintOTP
 StartupWMClass=footprintotp
 X-AppImage-Version=VERSION
-Comment=One-time pad encryption GUI application.
+Comment=Stream cipher encryption GUI application.
 MimeType=x-scheme-handler/footprintotp;
 Categories=GNOME;GTK;Utility;
