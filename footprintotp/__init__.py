@@ -42,23 +42,23 @@ def bn(filename):
     return basename(normpath(filename))
 
 
-class Utils:
-    @staticmethod
-    def lnbr(text, char=70):
-        """
-        Given a string `text` and integer `char`, return a string with
-        line breaks every `char` characters
-        
-        :param text: Text
-        :type text: str
-        :param char: Number of characters
-        :type char: int
-        :return: Text with line breaks
-        :rtype: str
-        """
-        t = TextWrapper(width=char, break_on_hyphens=False)
-        return t.fill(text)
+def lnbr(text, char=70):
+    """
+    Given a string `text` and integer `char`, return a string with
+    line breaks every `char` characters
     
+    :param text: Text
+    :type text: str
+    :param char: Number of characters
+    :type char: int
+    :return: Text with line breaks
+    :rtype: str
+    """
+    t = TextWrapper(width=char, break_on_hyphens=False)
+    return t.fill(text)
+
+
+class Utils:
     @staticmethod
     def read_config(filename):
         """

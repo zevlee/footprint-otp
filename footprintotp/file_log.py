@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from . import __data__, bn, Utils
+from . import __data__, bn, lnbr, Utils
 from os import remove
 from os.path import dirname, join, exists
 from platform import system
@@ -62,10 +62,10 @@ class FileLog(Gtk.Window):
         else:
             log = open(log_file).readlines()
         for i in range(len(log) // 5):
-            file = Utils.lnbr(bn(log[i * 5][:-1]), 32)
-            enc = Utils.lnbr(bn(log[i * 5 + 1][:-1]), 32)
-            key = Utils.lnbr(bn(log[i * 5 + 2][:-1]), 32)
-            encd = Utils.lnbr(log[i * 5 + 3][:-1], 32)
+            file = lnbr(bn(log[i * 5][:-1]), 32)
+            enc = lnbr(bn(log[i * 5 + 1][:-1]), 32)
+            key = lnbr(bn(log[i * 5 + 2][:-1]), 32)
+            encd = lnbr(log[i * 5 + 3][:-1], 32)
             self.store.append([file, enc, key, encd])
         self.tree = Gtk.TreeView(model=self.store)
         self.tree.connect("cursor-changed", self.on_selection)
