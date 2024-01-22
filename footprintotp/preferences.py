@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from . import __conf__, __data__, Utils
+from . import __conf__, __data__
 from os.path import join, exists, expanduser
 from platform import system
 from json import loads, dumps

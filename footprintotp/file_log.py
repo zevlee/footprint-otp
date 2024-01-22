@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from . import __data__, bn, lnbr, Utils
+from . import __data__, bn, lnbr
 from os import remove
 from os.path import dirname, join, exists
 from platform import system

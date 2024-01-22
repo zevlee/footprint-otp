@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 from .window import Window
-from . import __appdir__, __appname__, __conf__, __data__, __id__, DEFAULT, Utils
+from . import __appdir__, __appname__, __conf__, __data__, __id__, validate_config, DEFAULT
 from os import mkdir
 from os.path import join, exists
 from platform import system
@@ -51,7 +51,7 @@ class Application(Adw.Application):
             open(join(__data__, "otp.log"), "w").close()
         
         # Validate config file
-        Utils.validate_config("settings.json")
+        validate_config("settings.json")
 
         # Set color scheme
         config = loads(open(join(__conf__, "settings.json"), "r").read())

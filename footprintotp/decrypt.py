@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from . import __conf__, __data__, bn, lnbr, Utils
+from . import __conf__, __data__, bn, lnbr
 from .stream_cipher import StreamCipher
 from os.path import dirname, join, exists
 from json import loads

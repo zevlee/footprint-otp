@@ -58,52 +58,50 @@ def lnbr(text, char=70):
     return t.fill(text)
 
 
-class Utils:
-    @staticmethod
-    def read_config(filename):
-        """
-        Given a filename `filename`, return the configuration dictionary or
-        the default configuration if `filename` is not found
-        
-        :param filename: Filename
-        :type filename: str
-        :return: Configuration dictionary
-        :rtype: dict
-        """
-        try:
-            config = loads(open(join(__conf__, filename), "r").read())
-        except FileNotFoundError:
-            config = DEFAULT
-        return config
+def _read_config(filename):
+    """
+    Given a filename `filename`, return the configuration dictionary or
+    the default configuration if `filename` is not found
     
-    @staticmethod
-    def validate_config(filename):
-        """
-        Given a filename `filename`, replace the file with filename `default`
-        if it is not valid
-        
-        :param filename: Config filename
-        :type filename: str
-        :param default: Default filename
-        :type default: str
-        """
-        overwrite = False
-        config = Utils.read_config(filename)
-        # Remove invalid keys
-        for key in [k for k in config.keys() if k not in DEFAULT.keys()]:
-            config.pop(key)
+    :param filename: Filename
+    :type filename: str
+    :return: Configuration dictionary
+    :rtype: dict
+    """
+    try:
+        config = loads(open(join(__conf__, filename), "r").read())
+    except FileNotFoundError:
+        config = DEFAULT
+    return config
+
+
+def validate_config(filename):
+    """
+    Given a filename `filename`, replace the file with filename `default`
+    if it is not valid
+    
+    :param filename: Config filename
+    :type filename: str
+    :param default: Default filename
+    :type default: str
+    """
+    overwrite = False
+    config = _read_config(filename)
+    # Remove invalid keys
+    for key in [k for k in config.keys() if k not in DEFAULT.keys()]:
+        config.pop(key)
+        overwrite = True
+    # Add missing keys
+    for key in [k for k in DEFAULT.keys() if k not in config.keys()]:
+        config[key] = DEFAULT[key]
+        overwrite = True
+    # Validate config options
+    for k in ["encf", "appr", "dbug"]:
+        if not isinstance(config[k], int):
+            config[k] = DEFAULT[k]
             overwrite = True
-        # Add missing keys
-        for key in [k for k in DEFAULT.keys() if k not in config.keys()]:
-            config[key] = DEFAULT[key]
-            overwrite = True
-        # Validate config options
-        for k in ["encf", "appr", "dbug"]:
-            if not isinstance(config[k], int):
-                config[k] = DEFAULT[k]
-                overwrite = True
-        # Overwrite filename if there is an error
-        if overwrite:
-            with open(join(__conf__, filename), "w") as c:
-                c.write(dumps(config))
-                c.close()
+    # Overwrite filename if there is an error
+    if overwrite:
+        with open(join(__conf__, filename), "w") as c:
+            c.write(dumps(config))
+            c.close()

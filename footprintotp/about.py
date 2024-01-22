@@ -3,7 +3,7 @@ from platform import system
 from gi import require_versions
 require_versions({"Gtk": "4.0", "Adw": "1"})
 from gi.repository import Gtk
-from . import __appdir__, __appname__, __id__, __version__, Utils
+from . import __appdir__, __appname__, __id__, __version__
 
 class About(Gtk.AboutDialog):
     """

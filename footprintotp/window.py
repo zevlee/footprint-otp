@@ -5,7 +5,7 @@ from .preferences import Preferences
 from .file_log import FileLog
 from .encrypt import Encrypt
 from .decrypt import Decrypt
-from . import __appdir__, __appname__, __conf__, __id__, Utils
+from . import __appdir__, __appname__, __conf__, __id__
 from os.path import join
 from platform import system
 from json import loads
