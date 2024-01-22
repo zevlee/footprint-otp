@@ -5,7 +5,7 @@ from json import loads, dumps
 from gi import require_versions
 require_versions({"Gtk": "4.0", "Adw": "1"})
 from gi.repository import Gtk, Gdk, Gio, GLib, Adw
-from . import __appdir__, __conf__, __data__, validate_config, DEFAULT
+from . import __conf__, __data__
 from . import *
 from .window import Window
 
@@ -70,7 +70,7 @@ class Application(Adw.Application):
                 Gdk.Display.get_default()
             )
             icon_theme.add_search_path(
-                join(__appdir__, "usr", "share", "icons")
+                join(APPDIR, "usr", "share", "icons")
             )
 
     def do_activate(self):

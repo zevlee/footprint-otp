@@ -3,7 +3,7 @@ from platform import system
 from gi import require_versions
 require_versions({"Gtk": "4.0", "Adw": "1"})
 from gi.repository import Gtk
-from . import __appdir__, __version__
+from . import __version__
 from . import *
 
 class About(Gtk.AboutDialog):
@@ -41,7 +41,7 @@ class About(Gtk.AboutDialog):
         self.set_titlebar(header)
 
         # Set up logo
-        filename = join(__appdir__, f"{ID}.svg")
+        filename = join(APPDIR, f"{ID}.svg")
         logo = Gtk.Image.new_from_file(filename)
 
         # Add logo

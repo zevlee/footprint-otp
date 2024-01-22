@@ -4,7 +4,7 @@ from json import loads
 from gi import require_versions
 require_versions({"Gtk": "4.0", "Adw": "1"})
 from gi.repository import Gtk, Gio
-from . import __appdir__, __conf__
+from . import __conf__
 from . import *
 from .about import About
 from .preferences import Preferences
@@ -38,7 +38,7 @@ class Window(Gtk.ApplicationWindow):
 
         # Build menu
         builder = Gtk.Builder.new_from_file(
-            join(__appdir__, "gui", "menu.xml")
+            join(APPDIR, "gui", "menu.xml")
         )
         menu = builder.get_object("app-menu")
         menu_button = Gtk.MenuButton()

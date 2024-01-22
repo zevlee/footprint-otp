@@ -11,7 +11,7 @@ APPNAME = "Footprint OTP"
 # Application ID
 ID = "me.zevlee.FootprintOTP"
 # Application directory
-__appdir__ = dirname(dirname(__file__))
+APPDIR = dirname(dirname(__file__))
 # Config and data directories
 if system() == "Darwin":
     __conf__ = join(expanduser("~/Library/Application Support"), ID)
