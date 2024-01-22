@@ -5,7 +5,6 @@ from json import loads, dumps
 from gi import require_versions
 require_versions({"Gtk": "4.0", "Adw": "1"})
 from gi.repository import Gtk, Gdk, Gio, GLib, Adw
-from . import __data__
 from . import *
 from .window import Window
 
@@ -38,16 +37,16 @@ class Application(Adw.Application):
         # Restore any missing files and folders
         if not exists(CONF):
             mkdir(CONF)
-        if not exists(__data__):
-            mkdir(__data__)
-        if not exists(join(__data__, "keys")):
-            mkdir(join(__data__, "keys"))
+        if not exists(DATA):
+            mkdir(DATA)
+        if not exists(join(DATA, "keys")):
+            mkdir(join(DATA, "keys"))
         if not exists(join(CONF, "settings.json")):
             with open(join(CONF, "settings.json"), "w") as d:
                 d.write(dumps(DEFAULT))
                 d.close()
-        if not exists(join(__data__, "otp.log")):
-            open(join(__data__, "otp.log"), "w").close()
+        if not exists(join(DATA, "otp.log")):
+            open(join(DATA, "otp.log"), "w").close()
         
         # Validate config file
         validate_config("settings.json")

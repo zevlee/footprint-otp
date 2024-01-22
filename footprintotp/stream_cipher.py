@@ -3,7 +3,7 @@ from os import remove
 from os.path import splitext, exists, join
 from time import time, ctime
 from binascii import Error as BinasciiError
-from . import bn
+from . import *
 
 
 class StreamCipher:

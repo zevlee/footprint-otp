@@ -4,7 +4,6 @@ from json import loads, dumps
 from gi import require_versions
 require_versions({"Gtk": "4.0", "Adw": "1"})
 from gi.repository import Gtk, Gio, Adw
-from . import __data__
 from . import *
 
 
@@ -227,7 +226,7 @@ class Preferences(Gtk.Window):
         :type button: Gtk.Button
         """
         self.dflt.set_text(expanduser("~"))
-        self.keys.set_text(join(__data__, "keys"))
+        self.keys.set_text(join(DATA, "keys"))
         self.save.set_text("")
         self.dbug.set_active(False)
 

@@ -4,7 +4,6 @@ from time import time, strftime, gmtime
 from gi import require_versions
 require_versions({"Gtk": "4.0", "Adw": "1"})
 from gi.repository import Gtk, Gio
-from . import __data__
 from . import *
 from .stream_cipher import StreamCipher
 
@@ -231,7 +230,7 @@ class Encrypt(Gtk.Box):
             key,
             dirname,
             self.config["keys"],
-            __data__,
+            DATA,
             self.config["encf"],
             del_toggle
         )

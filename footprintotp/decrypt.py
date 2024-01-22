@@ -4,7 +4,6 @@ from time import time, strftime, gmtime
 from gi import require_versions
 require_versions({"Gtk": "4.0", "Adw": "1"})
 from gi.repository import Gtk, Gio
-from . import __data__
 from . import *
 from .stream_cipher import StreamCipher
 
@@ -145,7 +144,7 @@ class Decrypt(Gtk.Box):
             filename = Gio.File.get_path(dialog.get_file())
             self.file.set_text(filename)
             # Attempt to find key file
-            log = open(join(__data__, "otp.log"), "r").readlines()
+            log = open(join(DATA, "otp.log"), "r").readlines()
             bn_log = [bn(line[:-1]) for line in log]
             try:
                 key_ind = bn_log.index(bn(filename)) + 1
@@ -261,7 +260,7 @@ class Decrypt(Gtk.Box):
             file,
             key,
             outdir,
-            __data__,
+            DATA,
             del_toggle
         )
         elapsed = time() - start

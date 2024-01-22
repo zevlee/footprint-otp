@@ -15,14 +15,14 @@ APPDIR = dirname(dirname(__file__))
 # Config and data directories
 if system() == "Darwin":
     CONF = join(expanduser("~/Library/Application Support"), ID)
-    __data__ = CONF
+    DATA = CONF
 else:
     CONF = join(GLib.get_user_config_dir(), APPNAME)
-    __data__ = join(GLib.get_user_data_dir(), APPNAME)
+    DATA = join(GLib.get_user_data_dir(), APPNAME)
 # Default settings
 DEFAULT = {
     "dflt": expanduser("~"),
-    "keys": join(__data__, "keys"),
+    "keys": join(DATA, "keys"),
     "save": "",
     "encf": False,
     "appr": True,
