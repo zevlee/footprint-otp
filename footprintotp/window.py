@@ -4,7 +4,6 @@ from json import loads
 from gi import require_versions
 require_versions({"Gtk": "4.0", "Adw": "1"})
 from gi.repository import Gtk, Gio
-from . import __conf__
 from . import *
 from .about import About
 from .preferences import Preferences
@@ -150,7 +149,7 @@ class Window(Gtk.ApplicationWindow):
         :param widget: Widget
         :type widget: Gtk.Widget
         """
-        config = loads(open(join(__conf__, "settings.json"), "r").read())
+        config = loads(open(join(CONF, "settings.json"), "r").read())
 
         # Reset encrypt options
         self.encrypt.file.set_text("")

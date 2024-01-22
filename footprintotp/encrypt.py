@@ -4,7 +4,8 @@ from time import time, strftime, gmtime
 from gi import require_versions
 require_versions({"Gtk": "4.0", "Adw": "1"})
 from gi.repository import Gtk, Gio
-from . import __conf__, __data__, bn, lnbr
+from . import __data__
+from . import *
 from .stream_cipher import StreamCipher
 
 
@@ -25,7 +26,7 @@ class Encrypt(Gtk.Box):
 
         # Open stored preferences
         self.config = loads(
-            open(join(__conf__, "settings.json"), "r").read()
+            open(join(CONF, "settings.json"), "r").read()
         )
 
         # Set up grid
@@ -267,7 +268,7 @@ class Encrypt(Gtk.Box):
         :param button: Encrypt button
         :type button: Gtk.Button
         """
-        config = loads(open(join(__conf__, "settings.json"), "r").read())
+        config = loads(open(join(CONF, "settings.json"), "r").read())
         if not config["dbug"]:
             dialog = Gtk.MessageDialog(
                 transient_for=self.win,

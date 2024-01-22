@@ -14,10 +14,10 @@ ID = "me.zevlee.FootprintOTP"
 APPDIR = dirname(dirname(__file__))
 # Config and data directories
 if system() == "Darwin":
-    __conf__ = join(expanduser("~/Library/Application Support"), ID)
-    __data__ = __conf__
+    CONF = join(expanduser("~/Library/Application Support"), ID)
+    __data__ = CONF
 else:
-    __conf__ = join(GLib.get_user_config_dir(), APPNAME)
+    CONF = join(GLib.get_user_config_dir(), APPNAME)
     __data__ = join(GLib.get_user_data_dir(), APPNAME)
 # Default settings
 DEFAULT = {
@@ -69,7 +69,7 @@ def _read_config(filename):
     :rtype: dict
     """
     try:
-        config = loads(open(join(__conf__, filename), "r").read())
+        config = loads(open(join(CONF, filename), "r").read())
     except FileNotFoundError:
         config = DEFAULT
     return config
@@ -102,6 +102,6 @@ def validate_config(filename):
             overwrite = True
     # Overwrite filename if there is an error
     if overwrite:
-        with open(join(__conf__, filename), "w") as c:
+        with open(join(CONF, filename), "w") as c:
             c.write(dumps(config))
             c.close()

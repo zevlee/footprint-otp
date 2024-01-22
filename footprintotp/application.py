@@ -5,7 +5,7 @@ from json import loads, dumps
 from gi import require_versions
 require_versions({"Gtk": "4.0", "Adw": "1"})
 from gi.repository import Gtk, Gdk, Gio, GLib, Adw
-from . import __conf__, __data__
+from . import __data__
 from . import *
 from .window import Window
 
@@ -36,14 +36,14 @@ class Application(Adw.Application):
         Gtk.Application.do_startup(self)
 
         # Restore any missing files and folders
-        if not exists(__conf__):
-            mkdir(__conf__)
+        if not exists(CONF):
+            mkdir(CONF)
         if not exists(__data__):
             mkdir(__data__)
         if not exists(join(__data__, "keys")):
             mkdir(join(__data__, "keys"))
-        if not exists(join(__conf__, "settings.json")):
-            with open(join(__conf__, "settings.json"), "w") as d:
+        if not exists(join(CONF, "settings.json")):
+            with open(join(CONF, "settings.json"), "w") as d:
                 d.write(dumps(DEFAULT))
                 d.close()
         if not exists(join(__data__, "otp.log")):
@@ -53,7 +53,7 @@ class Application(Adw.Application):
         validate_config("settings.json")
 
         # Set color scheme
-        config = loads(open(join(__conf__, "settings.json"), "r").read())
+        config = loads(open(join(CONF, "settings.json"), "r").read())
         appearance = config["appr"]
         if appearance:
             self.get_style_manager().set_color_scheme(

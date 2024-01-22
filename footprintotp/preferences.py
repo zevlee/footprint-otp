@@ -4,7 +4,8 @@ from json import loads, dumps
 from gi import require_versions
 require_versions({"Gtk": "4.0", "Adw": "1"})
 from gi.repository import Gtk, Gio, Adw
-from . import __conf__, __data__
+from . import __data__
+from . import *
 
 
 class Preferences(Gtk.Window):
@@ -52,7 +53,7 @@ class Preferences(Gtk.Window):
 
         # Open stored preferences
         self.config = loads(
-            open(join(__conf__, "settings.json"), "r").read()
+            open(join(CONF, "settings.json"), "r").read()
         )
 
         # Default directory label, button, and entry box
@@ -250,7 +251,7 @@ class Preferences(Gtk.Window):
             raise FileNotFoundError
         if not exists(self.save.get_text()) and self.save.get_text() != "":
             raise FileNotFoundError
-        with open(join(__conf__, "settings.json"), "w") as c:
+        with open(join(CONF, "settings.json"), "w") as c:
             config = {
                 "dflt": self.dflt.get_text(),
                 "keys": self.keys.get_text(),
@@ -280,7 +281,7 @@ class Preferences(Gtk.Window):
         :param button: Button
         :type button: Gtk.Button
         """
-        config = loads(open(join(__conf__, "settings.json"), "r").read())
+        config = loads(open(join(CONF, "settings.json"), "r").read())
         if not config["dbug"]:
             dialog = Gtk.MessageDialog(
                 transient_for=self,
