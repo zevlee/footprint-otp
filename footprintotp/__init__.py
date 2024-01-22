@@ -30,19 +30,19 @@ DEFAULT = {
 }
 
 
+def bn(filename):
+    """
+    Normalize a file path then find the base filename
+
+    :param filename: Filename
+    :type filename: str
+    :return: Base filename
+    :rtype: str
+    """
+    return basename(normpath(filename))
+
+
 class Utils:
-    @staticmethod
-    def bn(filename):
-        """
-        Normalize a file path then find the base filename
-
-        :param filename: Filename
-        :type filename: str
-        :return: Base filename
-        :rtype: str
-        """
-        return basename(normpath(filename))
-
     @staticmethod
     def lnbr(text, char=70):
         """

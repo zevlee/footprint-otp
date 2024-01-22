@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from . import __conf__, __data__, Utils
+from . import __conf__, __data__, bn, Utils
 from .stream_cipher import StreamCipher
 from os.path import dirname, join, exists
 from json import loads
@@ -238,8 +238,8 @@ class Encrypt(Gtk.Box):
         )
         elapsed = time() - start
         elapsed = strftime("%H:%M:%S", gmtime(elapsed))
-        e = Utils.lnbr(Utils.bn(e))
-        k = Utils.lnbr(Utils.bn(k))
+        e = Utils.lnbr(bn(e))
+        k = Utils.lnbr(bn(k))
         enc_msg = f"<b>Encrypted</b>\n{e}"
         key_msg = f"<b>Key</b>\n{k}"
         time_msg = f"<b>Time</b>\n{elapsed}"

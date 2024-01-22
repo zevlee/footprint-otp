@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from . import Utils
+from . import bn, Utils
 from base64 import urlsafe_b64encode, urlsafe_b64decode
 from os import remove
 from os.path import splitext, exists, join
@@ -43,8 +43,8 @@ class StreamCipher:
         :return: Tuple of encrypted filename and key filename
         :rtype: tuple
         """
-        name = Utils.bn(filename)
-        key = Utils.bn(key_file)
+        name = bn(filename)
+        key = bn(key_file)
         if enc_names:
             encrypted = urlsafe_b64encode(
                 StreamCipher.xor(name.encode(), key.encode())
@@ -70,11 +70,11 @@ class StreamCipher:
         :return: Decrypted file name
         :rtype: str
         """
-        if Utils.bn(filename)[-4:] == ".otp":
-            dec_file = Utils.bn(filename)[:-4].encode()
+        if bn(filename)[-4:] == ".otp":
+            dec_file = bn(filename)[:-4].encode()
         else:
-            dec_file = Utils.bn(filename).encode()
-        key = Utils.bn(key_file).encode()
+            dec_file = bn(filename).encode()
+        key = bn(key_file).encode()
         try:
             dec_file = StreamCipher.xor(
                 urlsafe_b64decode(dec_file), key
@@ -178,9 +178,9 @@ class StreamCipher:
             try:
                 log_file = join(log_dir, "otp.log")
                 old_log = open(log_file, "r").readlines()
-                files = [Utils.bn(line[:-1]) for line in old_log]
+                files = [bn(line[:-1]) for line in old_log]
                 # Find the index of the filename
-                ind = files.index(Utils.bn(filename)) - 1
+                ind = files.index(bn(filename)) - 1
                 # Designate the indices of the lines to be removed i.e. the
                 # file and the four lines immediately following it
                 rmv = []

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from . import __data__, Utils
+from . import __data__, bn, Utils
 from os import remove
 from os.path import dirname, join, exists
 from platform import system
@@ -62,9 +62,9 @@ class FileLog(Gtk.Window):
         else:
             log = open(log_file).readlines()
         for i in range(len(log) // 5):
-            file = Utils.lnbr(Utils.bn(log[i * 5][:-1]), 32)
-            enc = Utils.lnbr(Utils.bn(log[i * 5 + 1][:-1]), 32)
-            key = Utils.lnbr(Utils.bn(log[i * 5 + 2][:-1]), 32)
+            file = Utils.lnbr(bn(log[i * 5][:-1]), 32)
+            enc = Utils.lnbr(bn(log[i * 5 + 1][:-1]), 32)
+            key = Utils.lnbr(bn(log[i * 5 + 2][:-1]), 32)
             encd = Utils.lnbr(log[i * 5 + 3][:-1], 32)
             self.store.append([file, enc, key, encd])
         self.tree = Gtk.TreeView(model=self.store)
@@ -157,7 +157,7 @@ class FileLog(Gtk.Window):
         """
         if self.file is not None:
             log = open(join(__data__, "otp.log"), "r").readlines()
-            bn_log = [Utils.bn(line[:-1]) for line in log]
+            bn_log = [bn(line[:-1]) for line in log]
             filename = log[bn_log.index(self.file)][:-1]
             key = log[bn_log.index(self.key)][:-1]
             self.parent.stack.set_visible_child_name("decrypt")
@@ -180,7 +180,7 @@ class FileLog(Gtk.Window):
             old_log = open(
                 join(__data__, "otp.log"), "r"
             ).readlines()
-            bn_log = [Utils.bn(line[:-1]) for line in old_log]
+            bn_log = [bn(line[:-1]) for line in old_log]
             if dialog.del_key.get_active():
                 remove(old_log[bn_log.index(self.key)])
             ind = bn_log.index(self.file) - 1
