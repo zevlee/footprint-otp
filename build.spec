@@ -115,7 +115,7 @@ elif system() == "Darwin":
         )
         app = BUNDLE(
             coll,
-            name='Hello World.app',
+            name='Footprint OTP.app',
             icon='macos/me.zevlee.FootprintOTP.icns',
             bundle_identifier=None,
             version=None,
