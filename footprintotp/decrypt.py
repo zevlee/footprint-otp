@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from . import Utils
+from . import __conf__, __data__, Utils
 from .stream_cipher import StreamCipher
 from os.path import dirname, join, exists
 from json import loads
@@ -27,7 +27,7 @@ class Decrypt(Gtk.Box):
 
         # Open stored preferences
         self.config = loads(
-            open(join(Utils.CONFIG_DIR, "settings.json"), "r").read()
+            open(join(__conf__, "settings.json"), "r").read()
         )
 
         # Set up grid
@@ -146,7 +146,7 @@ class Decrypt(Gtk.Box):
             filename = Gio.File.get_path(dialog.get_file())
             self.file.set_text(filename)
             # Attempt to find key file
-            log = open(join(Utils.DATA_DIR, "otp.log"), "r").readlines()
+            log = open(join(__data__, "otp.log"), "r").readlines()
             bn_log = [Utils.bn(line[:-1]) for line in log]
             try:
                 key_ind = bn_log.index(Utils.bn(filename)) + 1
@@ -262,7 +262,7 @@ class Decrypt(Gtk.Box):
             file,
             key,
             outdir,
-            Utils.DATA_DIR,
+            __data__,
             del_toggle
         )
         elapsed = time() - start
@@ -296,7 +296,7 @@ class Decrypt(Gtk.Box):
         :param button: Decrypt button
         :type button: Gtk.Button
         """
-        config = loads(open(join(Utils.CONFIG_DIR, "settings.json"), "r").read())
+        config = loads(open(join(__conf__, "settings.json"), "r").read())
         if not config["dbug"]:
             dialog = Gtk.MessageDialog(
                 transient_for=self.win,

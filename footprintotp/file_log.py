@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from . import Utils
+from . import __data__, Utils
 from os import remove
 from os.path import dirname, join, exists
 from platform import system
@@ -55,7 +55,7 @@ class FileLog(Gtk.Window):
 
         # Scrolled window of files
         self.store = Gtk.ListStore(str, str, str, str)
-        log_file = join(Utils.DATA_DIR, "otp.log")
+        log_file = join(__data__, "otp.log")
         if not exists(log_file):
             open(log_file, "w").close()
             log = []
@@ -156,7 +156,7 @@ class FileLog(Gtk.Window):
         :type button: Gtk.Button
         """
         if self.file is not None:
-            log = open(join(Utils.DATA_DIR, "otp.log"), "r").readlines()
+            log = open(join(__data__, "otp.log"), "r").readlines()
             bn_log = [Utils.bn(line[:-1]) for line in log]
             filename = log[bn_log.index(self.file)][:-1]
             key = log[bn_log.index(self.key)][:-1]
@@ -178,7 +178,7 @@ class FileLog(Gtk.Window):
         """
         if response == Gtk.ResponseType.OK:
             old_log = open(
-                join(Utils.DATA_DIR, "otp.log"), "r"
+                join(__data__, "otp.log"), "r"
             ).readlines()
             bn_log = [Utils.bn(line[:-1]) for line in old_log]
             if dialog.del_key.get_active():
@@ -188,7 +188,7 @@ class FileLog(Gtk.Window):
             for i in range(5):
                 rmv.append(ind + i)
             new_log = [j for i, j in enumerate(old_log) if i not in rmv]
-            with open(join(Utils.DATA_DIR, "otp.log"), "w") as logfile:
+            with open(join(__data__, "otp.log"), "w") as logfile:
                 for line in new_log:
                     logfile.write(line)
                 logfile.close()

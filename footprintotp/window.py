@@ -5,7 +5,7 @@ from .preferences import Preferences
 from .file_log import FileLog
 from .encrypt import Encrypt
 from .decrypt import Decrypt
-from . import __appdir__, __appname__, __id__, Utils
+from . import __appdir__, __appname__, __conf__, __id__, Utils
 from os.path import join
 from platform import system
 from json import loads
@@ -151,7 +151,7 @@ class Window(Gtk.ApplicationWindow):
         :param widget: Widget
         :type widget: Gtk.Widget
         """
-        config = loads(open(join(Utils.CONFIG_DIR, "settings.json"), "r").read())
+        config = loads(open(join(__conf__, "settings.json"), "r").read())
 
         # Reset encrypt options
         self.encrypt.file.set_text("")

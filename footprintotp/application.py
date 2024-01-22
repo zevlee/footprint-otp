@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 from .window import Window
-from . import __appdir__, __appname__, __id__, Utils
+from . import __appdir__, __appname__, __conf__, __data__, __id__, Utils
 from os import mkdir
 from os.path import join, exists
 from platform import system
@@ -37,24 +37,24 @@ class Application(Adw.Application):
         Gtk.Application.do_startup(self)
 
         # Restore any missing files and folders
-        if not exists(Utils.CONFIG_DIR):
-            mkdir(Utils.CONFIG_DIR)
-        if not exists(Utils.DATA_DIR):
-            mkdir(Utils.DATA_DIR)
-        if not exists(join(Utils.DATA_DIR, "keys")):
-            mkdir(join(Utils.DATA_DIR, "keys"))
-        if not exists(join(Utils.CONFIG_DIR, "settings.json")):
-            with open(join(Utils.CONFIG_DIR, "settings.json"), "w") as d:
+        if not exists(__conf__):
+            mkdir(__conf__)
+        if not exists(__data__):
+            mkdir(__data__)
+        if not exists(join(__data__, "keys")):
+            mkdir(join(__data__, "keys"))
+        if not exists(join(__conf__, "settings.json")):
+            with open(join(__conf__, "settings.json"), "w") as d:
                 d.write(dumps(Utils.DEFAULT))
                 d.close()
-        if not exists(join(Utils.DATA_DIR, "otp.log")):
-            open(join(Utils.DATA_DIR, "otp.log"), "w").close()
+        if not exists(join(__data__, "otp.log")):
+            open(join(__data__, "otp.log"), "w").close()
         
         # Validate config file
         Utils.validate_config("settings.json")
 
         # Set color scheme
-        config = loads(open(join(Utils.CONFIG_DIR, "settings.json"), "r").read())
+        config = loads(open(join(__conf__, "settings.json"), "r").read())
         appearance = config["appr"]
         if appearance:
             self.get_style_manager().set_color_scheme(

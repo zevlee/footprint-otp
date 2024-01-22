@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from . import Utils
+from . import __conf__, __data__, Utils
 from .stream_cipher import StreamCipher
 from os.path import dirname, join, exists
 from json import loads
@@ -27,7 +27,7 @@ class Encrypt(Gtk.Box):
 
         # Open stored preferences
         self.config = loads(
-            open(join(Utils.CONFIG_DIR, "settings.json"), "r").read()
+            open(join(__conf__, "settings.json"), "r").read()
         )
 
         # Set up grid
@@ -232,7 +232,7 @@ class Encrypt(Gtk.Box):
             key,
             dirname,
             self.config["keys"],
-            Utils.DATA_DIR,
+            __data__,
             self.config["encf"],
             del_toggle
         )
@@ -269,7 +269,7 @@ class Encrypt(Gtk.Box):
         :param button: Encrypt button
         :type button: Gtk.Button
         """
-        config = loads(open(join(Utils.CONFIG_DIR, "settings.json"), "r").read())
+        config = loads(open(join(__conf__, "settings.json"), "r").read())
         if not config["dbug"]:
             dialog = Gtk.MessageDialog(
                 transient_for=self.win,

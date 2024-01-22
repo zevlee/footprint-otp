@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from . import Utils
+from . import __conf__, __data__, Utils
 from os.path import join, exists, expanduser
 from platform import system
 from json import loads, dumps
@@ -54,7 +54,7 @@ class Preferences(Gtk.Window):
 
         # Open stored preferences
         self.config = loads(
-            open(join(Utils.CONFIG_DIR, "settings.json"), "r").read()
+            open(join(__conf__, "settings.json"), "r").read()
         )
 
         # Default directory label, button, and entry box
@@ -228,7 +228,7 @@ class Preferences(Gtk.Window):
         :type button: Gtk.Button
         """
         self.dflt.set_text(expanduser("~"))
-        self.keys.set_text(join(Utils.DATA_DIR, "keys"))
+        self.keys.set_text(join(__data__, "keys"))
         self.save.set_text("")
         self.dbug.set_active(False)
 
@@ -252,7 +252,7 @@ class Preferences(Gtk.Window):
             raise FileNotFoundError
         if not exists(self.save.get_text()) and self.save.get_text() != "":
             raise FileNotFoundError
-        with open(join(Utils.CONFIG_DIR, "settings.json"), "w") as c:
+        with open(join(__conf__, "settings.json"), "w") as c:
             config = {
                 "dflt": self.dflt.get_text(),
                 "keys": self.keys.get_text(),
@@ -282,7 +282,7 @@ class Preferences(Gtk.Window):
         :param button: Button
         :type button: Gtk.Button
         """
-        config = loads(open(join(Utils.CONFIG_DIR, "settings.json"), "r").read())
+        config = loads(open(join(__conf__, "settings.json"), "r").read())
         if not config["dbug"]:
             dialog = Gtk.MessageDialog(
                 transient_for=self,

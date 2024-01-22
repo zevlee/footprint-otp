@@ -24,7 +24,7 @@ else:
 class Utils:
     DEFAULT = {
         "dflt": expanduser("~"),
-        "keys": join(DATA_DIR, "keys"),
+        "keys": join(__data__, "keys"),
         "save": "",
         "encf": False,
         "appr": True,
@@ -71,7 +71,7 @@ class Utils:
         :rtype: dict
         """
         try:
-            config = loads(open(join(Utils.CONFIG_DIR, filename), "r").read())
+            config = loads(open(join(__conf__, filename), "r").read())
         except FileNotFoundError:
             config = Utils.DEFAULT
         return config
@@ -104,6 +104,6 @@ class Utils:
                 overwrite = True
         # Overwrite filename if there is an error
         if overwrite:
-            with open(join(Utils.CONFIG_DIR, filename), "w") as c:
+            with open(join(__conf__, filename), "w") as c:
                 c.write(dumps(config))
                 c.close()
