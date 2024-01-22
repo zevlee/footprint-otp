@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from .utils import Utils
+from . import Utils
 from os import remove
 from os.path import dirname, join, exists
 from platform import system

@@ -13,7 +13,6 @@ a = Analysis(
     binaries=[],
     datas=[
         ('LICENSE', '.'),
-        ('VERSION', '.'),
         ('gui', 'gui')
     ],
     hiddenimports=[],

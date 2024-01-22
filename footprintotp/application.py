@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 from .window import Window
-from .utils import Utils
+from . import __appdir__, __appname__, __id__, Utils
 from os import mkdir
 from os.path import join, exists
 from platform import system
@@ -20,15 +20,15 @@ class Application(Adw.Application):
         Constructor
         """
         super().__init__(
-            application_id=Utils.ID,
+            application_id=__id__,
             flags=Gio.ApplicationFlags.FLAGS_NONE
         )
 
         # Set application name
-        GLib.set_application_name(Utils.NAME)
+        GLib.set_application_name(__appname__)
 
         # Set program name
-        GLib.set_prgname(Utils.ID)
+        GLib.set_prgname(__id__)
 
     def do_startup(self):
         """
@@ -71,7 +71,7 @@ class Application(Adw.Application):
                 Gdk.Display.get_default()
             )
             icon_theme.add_search_path(
-                join(Utils.APP_DIR, "usr", "share", "icons")
+                join(__appdir__, "usr", "share", "icons")
             )
 
     def do_activate(self):

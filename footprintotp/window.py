@@ -5,7 +5,7 @@ from .preferences import Preferences
 from .file_log import FileLog
 from .encrypt import Encrypt
 from .decrypt import Decrypt
-from .utils import Utils
+from . import __appdir__, __appname__, __id__, Utils
 from os.path import join
 from platform import system
 from json import loads
@@ -28,18 +28,18 @@ class Window(Gtk.ApplicationWindow):
         super().__init__(
             application=app,
             resizable=True,
-            title=Utils.NAME
+            title=__appname__
         )
 
         # Add icon
-        self.set_icon_name(Utils.ID)
+        self.set_icon_name(__id__)
 
         # Set up header
         header = Gtk.HeaderBar()
 
         # Build menu
         builder = Gtk.Builder.new_from_file(
-            join(Utils.APP_DIR, "gui", "menu.xml")
+            join(__appdir__, "gui", "menu.xml")
         )
         menu = builder.get_object("app-menu")
         menu_button = Gtk.MenuButton()

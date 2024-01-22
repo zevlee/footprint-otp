@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from .utils import Utils
+from . import Utils
 from .stream_cipher import StreamCipher
 from os.path import dirname, join, exists
 from json import loads
