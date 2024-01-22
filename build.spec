@@ -13,7 +13,9 @@ a = Analysis(
     binaries=[],
     datas=[
         ('LICENSE', '.'),
-        ('gui', 'gui')
+        ('gui', 'gui'),
+        ('me.zevlee.FootprintOTP.svg', '.'),
+        ('linux/icons', 'usr/share/icons')
     ],
     hiddenimports=[],
     hookspath=[],
