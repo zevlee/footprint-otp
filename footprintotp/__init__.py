@@ -19,18 +19,18 @@ if system() == "Darwin":
 else:
     __conf__ = join(GLib.get_user_config_dir(), __appname__)
     __data__ = join(GLib.get_user_data_dir(), __appname__)
+# Default settings
+DEFAULT = {
+    "dflt": expanduser("~"),
+    "keys": join(__data__, "keys"),
+    "save": "",
+    "encf": False,
+    "appr": True,
+    "dbug": False
+}
 
 
 class Utils:
-    DEFAULT = {
-        "dflt": expanduser("~"),
-        "keys": join(__data__, "keys"),
-        "save": "",
-        "encf": False,
-        "appr": True,
-        "dbug": False
-    }
-
     @staticmethod
     def bn(filename):
         """
@@ -73,7 +73,7 @@ class Utils:
         try:
             config = loads(open(join(__conf__, filename), "r").read())
         except FileNotFoundError:
-            config = Utils.DEFAULT
+            config = DEFAULT
         return config
     
     @staticmethod
@@ -90,17 +90,17 @@ class Utils:
         overwrite = False
         config = Utils.read_config(filename)
         # Remove invalid keys
-        for key in [k for k in config.keys() if k not in Utils.DEFAULT.keys()]:
+        for key in [k for k in config.keys() if k not in DEFAULT.keys()]:
             config.pop(key)
             overwrite = True
         # Add missing keys
-        for key in [k for k in Utils.DEFAULT.keys() if k not in config.keys()]:
-            config[key] = Utils.DEFAULT[key]
+        for key in [k for k in DEFAULT.keys() if k not in config.keys()]:
+            config[key] = DEFAULT[key]
             overwrite = True
         # Validate config options
         for k in ["encf", "appr", "dbug"]:
             if not isinstance(config[k], int):
-                config[k] = Utils.DEFAULT[k]
+                config[k] = DEFAULT[k]
                 overwrite = True
         # Overwrite filename if there is an error
         if overwrite:

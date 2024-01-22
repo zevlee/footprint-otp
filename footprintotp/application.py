@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 from .window import Window
-from . import __appdir__, __appname__, __conf__, __data__, __id__, Utils
+from . import __appdir__, __appname__, __conf__, __data__, __id__, DEFAULT, Utils
 from os import mkdir
 from os.path import join, exists
 from platform import system
@@ -45,7 +45,7 @@ class Application(Adw.Application):
             mkdir(join(__data__, "keys"))
         if not exists(join(__conf__, "settings.json")):
             with open(join(__conf__, "settings.json"), "w") as d:
-                d.write(dumps(Utils.DEFAULT))
+                d.write(dumps(DEFAULT))
                 d.close()
         if not exists(join(__data__, "otp.log")):
             open(join(__data__, "otp.log"), "w").close()
