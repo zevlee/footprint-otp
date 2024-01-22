@@ -5,7 +5,7 @@ from json import loads, dumps
 from gi import require_versions
 require_versions({"Gtk": "4.0", "Adw": "1"})
 from gi.repository import Gtk, Gdk, Gio, GLib, Adw
-from . import __appdir__, __conf__, __data__, __id__, validate_config, DEFAULT
+from . import __appdir__, __conf__, __data__, validate_config, DEFAULT
 from . import *
 from .window import Window
 
@@ -19,7 +19,7 @@ class Application(Adw.Application):
         Constructor
         """
         super().__init__(
-            application_id=__id__,
+            application_id=ID,
             flags=Gio.ApplicationFlags.FLAGS_NONE
         )
 
@@ -27,7 +27,7 @@ class Application(Adw.Application):
         GLib.set_application_name(APPNAME)
 
         # Set program name
-        GLib.set_prgname(__id__)
+        GLib.set_prgname(ID)
 
     def do_startup(self):
         """

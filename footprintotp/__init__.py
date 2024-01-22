@@ -9,12 +9,12 @@ __version__ = "1.0.0"
 # Application name
 APPNAME = "Footprint OTP"
 # Application ID
-__id__ = "me.zevlee.FootprintOTP"
+ID = "me.zevlee.FootprintOTP"
 # Application directory
 __appdir__ = dirname(dirname(__file__))
 # Config and data directories
 if system() == "Darwin":
-    __conf__ = join(expanduser("~/Library/Application Support"), __id__)
+    __conf__ = join(expanduser("~/Library/Application Support"), ID)
     __data__ = __conf__
 else:
     __conf__ = join(GLib.get_user_config_dir(), APPNAME)

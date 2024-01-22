@@ -4,7 +4,7 @@ from json import loads
 from gi import require_versions
 require_versions({"Gtk": "4.0", "Adw": "1"})
 from gi.repository import Gtk, Gio
-from . import __appdir__, __conf__, __id__
+from . import __appdir__, __conf__
 from . import *
 from .about import About
 from .preferences import Preferences
@@ -31,7 +31,7 @@ class Window(Gtk.ApplicationWindow):
         )
 
         # Add icon
-        self.set_icon_name(__id__)
+        self.set_icon_name(ID)
 
         # Set up header
         header = Gtk.HeaderBar()
