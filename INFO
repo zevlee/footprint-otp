@@ -1,7 +1,0 @@
-#!/bin/sh
-
-APP=footprint-otp
-NAME="Footprint OTP"
-ICON=me.zevlee.FootprintOTP.svg
-AUTHOR="Zev Lee"
-DESCRIPTION="Stream cipher encryption GUI application."
