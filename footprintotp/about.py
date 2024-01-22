@@ -3,7 +3,7 @@ from platform import system
 from gi import require_versions
 require_versions({"Gtk": "4.0", "Adw": "1"})
 from gi.repository import Gtk
-from . import __appdir__, __appname__, __id__, __version__
+from . import __appdir__, __id__, __version__
 from . import *
 
 class About(Gtk.AboutDialog):
@@ -20,7 +20,7 @@ class About(Gtk.AboutDialog):
         super().__init__(
             modal=True,
             transient_for=parent,
-            program_name=__appname__,
+            program_name=APPNAME,
             version=__version__,
             copyright="Copyright (c) 2021-2024 Zev Lee",
             license_type=Gtk.License.MIT_X11,

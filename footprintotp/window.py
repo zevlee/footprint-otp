@@ -4,7 +4,8 @@ from json import loads
 from gi import require_versions
 require_versions({"Gtk": "4.0", "Adw": "1"})
 from gi.repository import Gtk, Gio
-from . import __appdir__, __appname__, __conf__, __id__
+from . import __appdir__, __conf__, __id__
+from . import *
 from .about import About
 from .preferences import Preferences
 from .file_log import FileLog
@@ -26,7 +27,7 @@ class Window(Gtk.ApplicationWindow):
         super().__init__(
             application=app,
             resizable=True,
-            title=__appname__
+            title=APPNAME
         )
 
         # Add icon

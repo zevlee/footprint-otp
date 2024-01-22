@@ -7,7 +7,7 @@ from gi.repository import GLib
 # Application version
 __version__ = "1.0.0"
 # Application name
-__appname__ = "Footprint OTP"
+APPNAME = "Footprint OTP"
 # Application ID
 __id__ = "me.zevlee.FootprintOTP"
 # Application directory
@@ -17,8 +17,8 @@ if system() == "Darwin":
     __conf__ = join(expanduser("~/Library/Application Support"), __id__)
     __data__ = __conf__
 else:
-    __conf__ = join(GLib.get_user_config_dir(), __appname__)
-    __data__ = join(GLib.get_user_data_dir(), __appname__)
+    __conf__ = join(GLib.get_user_config_dir(), APPNAME)
+    __data__ = join(GLib.get_user_data_dir(), APPNAME)
 # Default settings
 DEFAULT = {
     "dflt": expanduser("~"),
