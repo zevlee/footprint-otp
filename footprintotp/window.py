@@ -1,17 +1,15 @@
-#!/usr/bin/env python3
-
-from .about import About
-from .preferences import Preferences
-from .file_log import FileLog
-from .encrypt import Encrypt
-from .decrypt import Decrypt
-from . import __appdir__, __appname__, __conf__, __id__
 from os.path import join
 from platform import system
 from json import loads
 from gi import require_versions
 require_versions({"Gtk": "4.0", "Adw": "1"})
 from gi.repository import Gtk, Gio
+from . import __appdir__, __appname__, __conf__, __id__
+from .about import About
+from .preferences import Preferences
+from .file_log import FileLog
+from .encrypt import Encrypt
+from .decrypt import Decrypt
 
 
 class Window(Gtk.ApplicationWindow):

@@ -1,7 +1,3 @@
-#!/usr/bin/env python3
-
-from .window import Window
-from . import __appdir__, __appname__, __conf__, __data__, __id__, validate_config, DEFAULT
 from os import mkdir
 from os.path import join, exists
 from platform import system
@@ -9,6 +5,9 @@ from json import loads, dumps
 from gi import require_versions
 require_versions({"Gtk": "4.0", "Adw": "1"})
 from gi.repository import Gtk, Gdk, Gio, GLib, Adw
+from . import __appdir__, __appname__, __conf__, __data__, __id__, validate_config, DEFAULT
+from . import *
+from .window import Window
 
 
 class Application(Adw.Application):

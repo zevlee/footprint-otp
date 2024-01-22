@@ -1,12 +1,10 @@
-#!/usr/bin/env python3
-
-from . import __conf__, __data__
 from os.path import join, exists, expanduser
 from platform import system
 from json import loads, dumps
 from gi import require_versions
 require_versions({"Gtk": "4.0", "Adw": "1"})
 from gi.repository import Gtk, Gio, Adw
+from . import __conf__, __data__
 
 
 class Preferences(Gtk.Window):

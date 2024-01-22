@@ -1,12 +1,10 @@
-#!/usr/bin/env python3
-
-from . import __data__, bn, lnbr
 from os import remove
 from os.path import dirname, join, exists
 from platform import system
 from gi import require_versions
 require_versions({"Gtk": "4.0", "Adw": "1"})
 from gi.repository import Gtk
+from . import __data__, bn, lnbr
 
 
 class FileLog(Gtk.Window):

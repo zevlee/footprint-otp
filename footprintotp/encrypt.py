@@ -1,13 +1,11 @@
-#!/usr/bin/env python3
-
-from . import __conf__, __data__, bn, lnbr
-from .stream_cipher import StreamCipher
 from os.path import dirname, join, exists
 from json import loads
 from time import time, strftime, gmtime
 from gi import require_versions
 require_versions({"Gtk": "4.0", "Adw": "1"})
 from gi.repository import Gtk, Gio
+from . import __conf__, __data__, bn, lnbr
+from .stream_cipher import StreamCipher
 
 
 class Encrypt(Gtk.Box):
