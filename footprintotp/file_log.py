@@ -1,12 +1,10 @@
-#!/usr/bin/env python3
-
-from .utils import Utils
 from os import remove
 from os.path import dirname, join, exists
 from platform import system
 from gi import require_versions
 require_versions({"Gtk": "4.0", "Adw": "1"})
 from gi.repository import Gtk
+from . import *
 
 
 class FileLog(Gtk.Window):
@@ -55,17 +53,17 @@ class FileLog(Gtk.Window):
 
         # Scrolled window of files
         self.store = Gtk.ListStore(str, str, str, str)
-        log_file = join(Utils.DATA_DIR, "otp.log")
+        log_file = join(DATA, "otp.log")
         if not exists(log_file):
             open(log_file, "w").close()
             log = []
         else:
             log = open(log_file).readlines()
         for i in range(len(log) // 5):
-            file = Utils.lnbr(Utils.bn(log[i * 5][:-1]), 32)
-            enc = Utils.lnbr(Utils.bn(log[i * 5 + 1][:-1]), 32)
-            key = Utils.lnbr(Utils.bn(log[i * 5 + 2][:-1]), 32)
-            encd = Utils.lnbr(log[i * 5 + 3][:-1], 32)
+            file = lnbr(bn(log[i * 5][:-1]), 32)
+            enc = lnbr(bn(log[i * 5 + 1][:-1]), 32)
+            key = lnbr(bn(log[i * 5 + 2][:-1]), 32)
+            encd = lnbr(log[i * 5 + 3][:-1], 32)
             self.store.append([file, enc, key, encd])
         self.tree = Gtk.TreeView(model=self.store)
         self.tree.connect("cursor-changed", self.on_selection)
@@ -156,8 +154,8 @@ class FileLog(Gtk.Window):
         :type button: Gtk.Button
         """
         if self.file is not None:
-            log = open(join(Utils.DATA_DIR, "otp.log"), "r").readlines()
-            bn_log = [Utils.bn(line[:-1]) for line in log]
+            log = open(join(DATA, "otp.log"), "r").readlines()
+            bn_log = [bn(line[:-1]) for line in log]
             filename = log[bn_log.index(self.file)][:-1]
             key = log[bn_log.index(self.key)][:-1]
             self.parent.stack.set_visible_child_name("decrypt")
@@ -178,9 +176,9 @@ class FileLog(Gtk.Window):
         """
         if response == Gtk.ResponseType.OK:
             old_log = open(
-                join(Utils.DATA_DIR, "otp.log"), "r"
+                join(DATA, "otp.log"), "r"
             ).readlines()
-            bn_log = [Utils.bn(line[:-1]) for line in old_log]
+            bn_log = [bn(line[:-1]) for line in old_log]
             if dialog.del_key.get_active():
                 remove(old_log[bn_log.index(self.key)])
             ind = bn_log.index(self.file) - 1
@@ -188,7 +186,7 @@ class FileLog(Gtk.Window):
             for i in range(5):
                 rmv.append(ind + i)
             new_log = [j for i, j in enumerate(old_log) if i not in rmv]
-            with open(join(Utils.DATA_DIR, "otp.log"), "w") as logfile:
+            with open(join(DATA, "otp.log"), "w") as logfile:
                 for line in new_log:
                     logfile.write(line)
                 logfile.close()

@@ -1,17 +1,15 @@
-#!/usr/bin/env python3
-
-from .about import About
-from .preferences import Preferences
-from .file_log import FileLog
-from .encrypt import Encrypt
-from .decrypt import Decrypt
-from .utils import Utils
 from os.path import join
 from platform import system
 from json import loads
 from gi import require_versions
 require_versions({"Gtk": "4.0", "Adw": "1"})
 from gi.repository import Gtk, Gio
+from . import *
+from .about import About
+from .preferences import Preferences
+from .file_log import FileLog
+from .encrypt import Encrypt
+from .decrypt import Decrypt
 
 
 class Window(Gtk.ApplicationWindow):
@@ -28,18 +26,18 @@ class Window(Gtk.ApplicationWindow):
         super().__init__(
             application=app,
             resizable=True,
-            title=Utils.NAME
+            title=APPNAME
         )
 
         # Add icon
-        self.set_icon_name(Utils.ID)
+        self.set_icon_name(ID)
 
         # Set up header
         header = Gtk.HeaderBar()
 
         # Build menu
         builder = Gtk.Builder.new_from_file(
-            join(Utils.APP_DIR, "gui", "menu.xml")
+            join(APPDIR, "gui", "menu.xml")
         )
         menu = builder.get_object("app-menu")
         menu_button = Gtk.MenuButton()
@@ -151,7 +149,7 @@ class Window(Gtk.ApplicationWindow):
         :param widget: Widget
         :type widget: Gtk.Widget
         """
-        config = loads(open(join(Utils.CONFIG_DIR, "settings.json"), "r").read())
+        config = loads(open(join(CONF, "settings.json"), "r").read())
 
         # Reset encrypt options
         self.encrypt.file.set_text("")

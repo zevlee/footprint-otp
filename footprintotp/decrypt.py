@@ -1,13 +1,11 @@
-#!/usr/bin/env python3
-
-from .utils import Utils
-from .stream_cipher import StreamCipher
 from os.path import dirname, join, exists
 from json import loads
 from time import time, strftime, gmtime
 from gi import require_versions
 require_versions({"Gtk": "4.0", "Adw": "1"})
 from gi.repository import Gtk, Gio
+from . import *
+from .stream_cipher import StreamCipher
 
 
 class Decrypt(Gtk.Box):
@@ -27,7 +25,7 @@ class Decrypt(Gtk.Box):
 
         # Open stored preferences
         self.config = loads(
-            open(join(Utils.CONFIG_DIR, "settings.json"), "r").read()
+            open(join(CONF, "settings.json"), "r").read()
         )
 
         # Set up grid
@@ -146,10 +144,10 @@ class Decrypt(Gtk.Box):
             filename = Gio.File.get_path(dialog.get_file())
             self.file.set_text(filename)
             # Attempt to find key file
-            log = open(join(Utils.DATA_DIR, "otp.log"), "r").readlines()
-            bn_log = [Utils.bn(line[:-1]) for line in log]
+            log = open(join(DATA, "otp.log"), "r").readlines()
+            bn_log = [bn(line[:-1]) for line in log]
             try:
-                key_ind = bn_log.index(Utils.bn(filename)) + 1
+                key_ind = bn_log.index(bn(filename)) + 1
                 if exists(join(self.config["keys"], bn_log[key_ind])):
                     self.key.set_text(
                         join(self.config["keys"], bn_log[key_ind])
@@ -262,12 +260,12 @@ class Decrypt(Gtk.Box):
             file,
             key,
             outdir,
-            Utils.DATA_DIR,
+            DATA,
             del_toggle
         )
         elapsed = time() - start
         elapsed = strftime("%H:%M:%S", gmtime(elapsed))
-        d = Utils.lnbr(Utils.bn(d))
+        d = lnbr(bn(d))
         dec_msg = f"<b>Decrypted</b>\n{d}"
         time_msg = f"<b>Time</b>\n{elapsed}"
         msg = f"{dec_msg}\n{time_msg}"
@@ -296,7 +294,7 @@ class Decrypt(Gtk.Box):
         :param button: Decrypt button
         :type button: Gtk.Button
         """
-        config = loads(open(join(Utils.CONFIG_DIR, "settings.json"), "r").read())
+        config = loads(open(join(CONF, "settings.json"), "r").read())
         if not config["dbug"]:
             dialog = Gtk.MessageDialog(
                 transient_for=self.win,

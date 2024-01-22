@@ -1,7 +1,3 @@
-#!/usr/bin/env python3
-
-from .window import Window
-from .utils import Utils
 from os import mkdir
 from os.path import join, exists
 from platform import system
@@ -9,6 +5,8 @@ from json import loads, dumps
 from gi import require_versions
 require_versions({"Gtk": "4.0", "Adw": "1"})
 from gi.repository import Gtk, Gdk, Gio, GLib, Adw
+from . import *
+from .window import Window
 
 
 class Application(Adw.Application):
@@ -20,15 +18,15 @@ class Application(Adw.Application):
         Constructor
         """
         super().__init__(
-            application_id=Utils.ID,
+            application_id=ID,
             flags=Gio.ApplicationFlags.FLAGS_NONE
         )
 
         # Set application name
-        GLib.set_application_name(Utils.NAME)
+        GLib.set_application_name(APPNAME)
 
         # Set program name
-        GLib.set_prgname(Utils.ID)
+        GLib.set_prgname(ID)
 
     def do_startup(self):
         """
@@ -37,24 +35,24 @@ class Application(Adw.Application):
         Gtk.Application.do_startup(self)
 
         # Restore any missing files and folders
-        if not exists(Utils.CONFIG_DIR):
-            mkdir(Utils.CONFIG_DIR)
-        if not exists(Utils.DATA_DIR):
-            mkdir(Utils.DATA_DIR)
-        if not exists(join(Utils.DATA_DIR, "keys")):
-            mkdir(join(Utils.DATA_DIR, "keys"))
-        if not exists(join(Utils.CONFIG_DIR, "settings.json")):
-            with open(join(Utils.CONFIG_DIR, "settings.json"), "w") as d:
-                d.write(dumps(Utils.DEFAULT))
+        if not exists(CONF):
+            mkdir(CONF)
+        if not exists(DATA):
+            mkdir(DATA)
+        if not exists(join(DATA, "keys")):
+            mkdir(join(DATA, "keys"))
+        if not exists(join(CONF, "settings.json")):
+            with open(join(CONF, "settings.json"), "w") as d:
+                d.write(dumps(DEFAULT))
                 d.close()
-        if not exists(join(Utils.DATA_DIR, "otp.log")):
-            open(join(Utils.DATA_DIR, "otp.log"), "w").close()
+        if not exists(join(DATA, "otp.log")):
+            open(join(DATA, "otp.log"), "w").close()
         
         # Validate config file
-        Utils.validate_config("settings.json")
+        validate_config("settings.json")
 
         # Set color scheme
-        config = loads(open(join(Utils.CONFIG_DIR, "settings.json"), "r").read())
+        config = loads(open(join(CONF, "settings.json"), "r").read())
         appearance = config["appr"]
         if appearance:
             self.get_style_manager().set_color_scheme(
@@ -71,7 +69,7 @@ class Application(Adw.Application):
                 Gdk.Display.get_default()
             )
             icon_theme.add_search_path(
-                join(Utils.APP_DIR, "usr", "share", "icons")
+                join(APPDIR, "usr", "share", "icons")
             )
 
     def do_activate(self):

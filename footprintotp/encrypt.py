@@ -1,13 +1,11 @@
-#!/usr/bin/env python3
-
-from .utils import Utils
-from .stream_cipher import StreamCipher
 from os.path import dirname, join, exists
 from json import loads
 from time import time, strftime, gmtime
 from gi import require_versions
 require_versions({"Gtk": "4.0", "Adw": "1"})
 from gi.repository import Gtk, Gio
+from . import *
+from .stream_cipher import StreamCipher
 
 
 class Encrypt(Gtk.Box):
@@ -27,7 +25,7 @@ class Encrypt(Gtk.Box):
 
         # Open stored preferences
         self.config = loads(
-            open(join(Utils.CONFIG_DIR, "settings.json"), "r").read()
+            open(join(CONF, "settings.json"), "r").read()
         )
 
         # Set up grid
@@ -232,14 +230,14 @@ class Encrypt(Gtk.Box):
             key,
             dirname,
             self.config["keys"],
-            Utils.DATA_DIR,
+            DATA,
             self.config["encf"],
             del_toggle
         )
         elapsed = time() - start
         elapsed = strftime("%H:%M:%S", gmtime(elapsed))
-        e = Utils.lnbr(Utils.bn(e))
-        k = Utils.lnbr(Utils.bn(k))
+        e = lnbr(bn(e))
+        k = lnbr(bn(k))
         enc_msg = f"<b>Encrypted</b>\n{e}"
         key_msg = f"<b>Key</b>\n{k}"
         time_msg = f"<b>Time</b>\n{elapsed}"
@@ -269,7 +267,7 @@ class Encrypt(Gtk.Box):
         :param button: Encrypt button
         :type button: Gtk.Button
         """
-        config = loads(open(join(Utils.CONFIG_DIR, "settings.json"), "r").read())
+        config = loads(open(join(CONF, "settings.json"), "r").read())
         if not config["dbug"]:
             dialog = Gtk.MessageDialog(
                 transient_for=self.win,
