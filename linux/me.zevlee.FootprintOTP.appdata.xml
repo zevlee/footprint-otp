@@ -20,7 +20,10 @@
   <launchable type="desktop-id">me.zevlee.FootprintOTP.desktop</launchable>
   <screenshots>
     <screenshot type="default">
-      <image>https://github.com/zevlee/footprint-otp/blob/main/screenshots/screenshot.png</image>
+      <image>https://raw.githubusercontent.com/zevlee/footprint-otp/refs/heads/main/screenshots/screenshot.png</image>
     </screenshot>
   </screenshots>
+  <developer_name>Zev Lee</developer_name>
+  <url type="homepage">https://github.com/zevlee/footprint-otp</url>
+  <url type="bugtracker">https://github.com/zevlee/footprint-otp/issues</url>
 </component>
