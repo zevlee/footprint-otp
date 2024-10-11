@@ -3,6 +3,7 @@ from platform import system
 from textwrap import TextWrapper
 from json import loads, dumps
 from gi.repository import GLib
+from platformdirs import user_config_dir, user_data_dir
 
 # Application version
 __version__ = "1.0.1"
@@ -13,12 +14,8 @@ ID = "me.zevlee.FootprintOTP"
 # Application directory
 APPDIR = dirname(dirname(__file__))
 # Config and data directories
-if system() == "Darwin":
-    CONF = join(expanduser("~/Library/Application Support"), ID)
-    DATA = CONF
-else:
-    CONF = join(GLib.get_user_config_dir(), APPNAME)
-    DATA = join(GLib.get_user_data_dir(), APPNAME)
+CONF = user_config_dir(APPNAME)
+DATA = user_data_dir(APPNAME)
 # Default settings
 DEFAULT = {
     "dflt": expanduser("~"),
