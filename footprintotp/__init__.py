@@ -6,7 +6,7 @@ from gi.repository import GLib
 from platformdirs import user_config_dir, user_data_dir
 
 # Application version
-__version__ = "1.0.1"
+__version__ = "1.0.3"
 # Application name
 APPNAME = "Footprint OTP"
 # Application ID
