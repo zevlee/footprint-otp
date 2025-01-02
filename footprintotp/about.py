@@ -22,7 +22,7 @@ class About(Gtk.AboutDialog):
             transient_for=parent,
             program_name=APPNAME,
             version=__version__,
-            copyright="Copyright (c) 2021-2024 Zev Lee",
+            copyright="Copyright (c) 2021-2025 Zev Lee",
             license_type=Gtk.License.MIT_X11,
             website="https://github.com/zevlee/footprint-otp",
             website_label="Homepage"
